@@ -1,349 +1,414 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elite Ultra Tools V4</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- QR Engine -->
-    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
-    <!-- Slider CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>User Interface</title>
+  
+  <link rel="icon" type="image/png" id="dynFavicon" href=""/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* --- BASIC SETUP --- */
+    * { 
+      margin: 0; padding: 0; box-sizing: border-box; 
+      -webkit-tap-highlight-color: transparent; 
+      -webkit-user-select: none; user-select: none;
+    }
+    input, textarea { -webkit-user-select: text; user-select: text; }
     
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap');
-        
-        body { background: #000000; color: #fff; font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
-        
-        /* Premium Text Styles */
-        .font-cyber { font-family: 'Orbitron', sans-serif; }
-        .text-neon-gold { color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-        .text-neon-blue { color: #00f3ff; text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+    body {
+      background: #000;
+      background-size: cover; background-position: center; background-attachment: fixed;
+      color: #fff; font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh; display: flex; flex-direction: column;
+      overflow-x: hidden; touch-action: manipulation;
+    }
 
-        /* Floating Inputs (No Container Style) */
-        .float-input {
-            background: rgba(255, 255, 255, 0.05);
-            border-bottom: 2px solid #333;
-            color: #fff;
-            padding: 15px;
-            width: 100%;
-            outline: none;
-            transition: all 0.3s;
-            border-radius: 8px 8px 0 0;
-            font-size: 16px;
-        }
-        .float-input:focus {
-            background: rgba(255, 215, 0, 0.05);
-            border-color: #FFD700;
-        }
+    /* --- PRELOADER --- */
+    #preloader {
+        position: fixed; inset: 0; background: #000; z-index: 99999;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        transition: opacity 0.5s ease;
+    }
+    .loader-ring {
+        width: 50px; height: 50px; border: 3px solid rgba(0, 242, 255, 0.2);
+        border-top-color: #00f2ff; border-radius: 50%;
+        animation: spin 1s linear infinite; margin-bottom: 15px;
+    }
+    .loader-text { font-family: 'Orbitron'; letter-spacing: 2px; font-size: 0.9rem; animation: pulse 1.5s infinite; }
 
-        /* Glass Card (Only for ID Gen & Menu) */
-        .glass-box {
-            background: rgba(20, 20, 20, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-        }
+    .main-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 30px 20px; flex: 1; text-align: center; display: none; }
 
-        /* Slider Image Settings */
-        .swiper { width: 100%; height: 220px; border-radius: 16px; }
-        .swiper-slide { overflow: hidden; }
-        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; transition: transform 5s; }
-        .swiper-slide-active img { transform: scale(1.1); } /* Zoom effect */
+    /* --- PROFILE --- */
+    .profile-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; }
+    .avatar-wrapper { 
+        position: relative; width: 110px; height: 110px; 
+        margin-bottom: 15px; display: flex; justify-content: center; align-items: center; 
+    }
+    .avatar-img { 
+        width: 100px; height: 100px; border-radius: 50%; object-fit: cover; 
+        border: 2px solid #000; z-index: 2; position: relative; pointer-events: none; 
+    }
+    .ring {
+      position: absolute; inset: -5px; border-radius: 50%; border: 4px solid; z-index: 1;
+      animation: spin 2s linear infinite, colorCycle 12s infinite linear;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes colorCycle {
+        0%, 30% { border-color: rgba(0, 242, 255, 0.15); border-top-color: #00f2ff; box-shadow: 0 0 15px rgba(0, 242, 255, 0.4); }
+        33%, 63% { border-color: rgba(255, 0, 229, 0.15); border-top-color: #ff00e5; box-shadow: 0 0 15px rgba(255, 0, 229, 0.4); }
+        66%, 100% { border-color: rgba(0, 255, 136, 0.15); border-top-color: #00ff88; box-shadow: 0 0 15px rgba(0, 255, 136, 0.4); }
+    }
+    
+    .username {
+      font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 900;
+      background: linear-gradient(90deg, #fff, #00f2ff, #ff00e5, #fff);
+      background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: textShine 4s linear infinite; margin-bottom: 5px; letter-spacing: 1px;
+    }
+    @keyframes textShine { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+    .bio { font-size: 0.9rem; color: #aaa; max-width: 90%; line-height: 1.4; }
 
-        /* Animations */
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .anim-up { animation: slideUp 0.5s ease-out forwards; }
-        
-        /* Navigation Active */
-        .nav-btn.active i { color: #FFD700; transform: scale(1.2); text-shadow: 0 0 15px #FFD700; }
-    </style>
+    /* --- AUDIO PLAYER --- */
+    .audio-player {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50px; padding: 6px 15px 6px 6px; margin-bottom: 25px;
+      display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px);
+      position: relative; overflow: hidden;
+    }
+    .play-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: #00f2ff; color: #000; font-size: 0.9rem; cursor: pointer; display: flex; justify-content: center; align-items: center; z-index: 2; }
+    
+    .track-info { flex: 1; text-align: left; overflow: hidden; z-index: 2; position: relative; }
+    .track-name-container { width: 100%; overflow: hidden; white-space: nowrap; }
+    
+    .track-name { font-size: 0.85rem; font-weight: 700; color: #fff; display: inline-block; }
+    .scrolling { animation: scrollText 8s linear infinite; padding-left: 100%; }
+    @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+    .track-status { font-size: 0.65rem; color: #00f2ff; text-transform: uppercase; }
+
+    /* --- EQUALIZER --- */
+    .equalizer {
+        display: flex; gap: 3px; align-items: flex-end; height: 20px; margin-left: 5px; z-index: 2;
+        opacity: 0.5; transition: 0.3s;
+    }
+    .equalizer.playing { opacity: 1; }
+    .bar { width: 4px; background: #00f2ff; border-radius: 2px; height: 3px; }
+    
+    .equalizer.playing .bar:nth-child(1) { animation: bounce 0.5s infinite alternate; }
+    .equalizer.playing .bar:nth-child(2) { animation: bounce 0.7s infinite alternate 0.1s; }
+    .equalizer.playing .bar:nth-child(3) { animation: bounce 0.6s infinite alternate 0.2s; }
+    @keyframes bounce { 0% { height: 3px; background: #00f2ff; } 100% { height: 20px; background: #ff00e5; } }
+
+    /* --- SLIDER & BUTTONS --- */
+    .slider-box { width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.15); position: relative; pointer-events: none; }
+    .slider-track { display: flex; height: 100%; transition: transform 0.5s ease-in-out; }
+    .slide { min-width: 100%; height: 100%; }
+    .slide img { width: 100%; height: 100%; object-fit: cover; }
+
+    .section-label { font-family: 'Orbitron'; font-size: 0.75rem; color: #555; letter-spacing: 3px; margin: 25px 0 10px; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
+    .btn-container { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 10px; }
+    
+    .universal-btn {
+      position: relative; height: 55px; width: 100%;
+      background: linear-gradient(90deg, #0f0f0f, #151515);
+      border: 1px solid #222; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease; cursor: pointer; overflow: hidden;
+    }
+    .universal-btn:hover { border-color: #00f2ff; transform: scale(1.01); background: #1a1a1a; }
+    .btn-left { position: absolute; left: 10px; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+    .btn-logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+    .btn-icon-font { font-size: 1.3rem; color: #00f2ff; }
+    .btn-text { font-size: 0.95rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; z-index: 2; pointer-events: none; }
+    .btn-right { position: absolute; right: 15px; font-size: 1rem; color: #444; transition: 0.3s; }
+    .universal-btn:hover .btn-right { color: #fff; }
+    .btn-right.locked { color: #ff00e5; }
+    
+    .inline-pass-input { 
+        width: 100%; height: 100%; background: #000; border: none; 
+        color: #00f2ff; text-align: center; font-family: 'Orbitron'; 
+        font-size: 1.2rem; letter-spacing: 3px; outline: none; padding: 0 10px; 
+        animation: glow 1s infinite alternate; z-index: 10;
+    }
+
+    footer { margin-top: 50px; padding: 30px 20px; border-top: 1px solid #111; background: linear-gradient(0deg, rgba(0,242,255,0.05) 0%, transparent 100%); text-align: center; font-family: 'Orbitron'; }
+    .footer-title { font-size: 1rem; color: #fff; letter-spacing: 2px; margin-bottom: 5px; font-weight: 800; pointer-events: none; }
+    .footer-sub { font-size: 0.7rem; color: #555; letter-spacing: 1px; pointer-events: none; }
+  </style>
 </head>
-<body class="pb-32">
+<body>
 
-    <!-- HEADER -->
-    <header class="px-5 py-4 flex justify-between items-center sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-dragon text-3xl text-neon-gold"></i>
-            <h1 class="font-cyber font-bold text-xl tracking-widest text-white">ELITE <span class="text-neon-gold">X</span></h1>
+  <!-- PRELOADER -->
+  <div id="preloader">
+    <div class="loader-ring"></div>
+    <div class="loader-text">SYSTEM LOADING...</div>
+  </div>
+
+  <div class="main-container" id="mainContainer">
+    
+    <div class="profile-section">
+      <div class="avatar-wrapper">
+        <div class="ring"></div>
+        <img src="" class="avatar-img" id="userAvatar">
+      </div>
+      <div class="username" id="userName">...</div>
+      <div class="bio" id="userBio"></div>
+    </div>
+
+    <!-- AUDIO PLAYER -->
+    <div class="audio-player">
+      <button class="play-btn" id="playBtn"><i class="fas fa-play"></i></button>
+      
+      <div class="track-info">
+        <div class="track-name-container">
+            <div class="track-name" id="trackName">Loading...</div>
         </div>
-        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse box-shadow-[0_0_10px_green]"></div>
-    </header>
+        <div class="track-status" id="trackStatus">Ready</div>
+      </div>
 
-    <main class="p-4 max-w-xl mx-auto space-y-8">
+      <div class="equalizer" id="equalizer">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+      </div>
+    </div>
+    <audio id="audio" loop></audio>
 
-        <!-- HOME SECTION -->
-        <div id="sec-home" class="view-section anim-up">
-            <!-- High Quality Slider -->
-            <div class="swiper mySwiper shadow-2xl border border-white/10 mb-8 relative">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide">
-                        <img src="https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=1000&auto=format&fit=crop" alt="High Tech">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex items-end p-5">
-                            <h2 class="font-cyber text-2xl text-white">FUTURE TECH</h2>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000&auto=format&fit=crop" alt="Security">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex items-end p-5">
-                            <h2 class="font-cyber text-2xl text-neon-blue">CYBER SECURITY</h2>
-                        </div>
-                    </div>
-                    <div class="swiper-slide">
-                        <img src="https://images.unsplash.com/photo-1614064641938-3bcee529741d?q=80&w=1000&auto=format&fit=crop" alt="AI">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex items-end p-5">
-                            <h2 class="font-cyber text-2xl text-neon-gold">AI POWERED</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="slider-box"><div class="slider-track" id="sliderTrack"></div></div>
 
-            <!-- Menu Buttons -->
-            <div class="grid grid-cols-2 gap-4">
-                <div onclick="switchTab('qr-gen')" class="glass-box p-6 flex flex-col items-center justify-center gap-2 cursor-pointer active:scale-95 transition hover:border-gold">
-                    <i class="fa-solid fa-qrcode text-4xl text-neon-gold mb-2"></i>
-                    <span class="font-bold font-cyber">QR MASTER</span>
-                </div>
-                <div onclick="switchTab('id-gen')" class="glass-box p-6 flex flex-col items-center justify-center gap-2 cursor-pointer active:scale-95 transition hover:border-blue-400">
-                    <i class="fa-solid fa-fingerprint text-4xl text-neon-blue mb-2"></i>
-                    <span class="font-bold font-cyber">ID MAKER</span>
-                </div>
-            </div>
-        </div>
+    <div class="section-label">Websites</div>
+    <div class="btn-container" id="webList"></div>
 
-        <!-- QR GENERATOR (NO CONTAINER / OPEN LAYOUT) -->
-        <div id="sec-qr-gen" class="view-section hidden anim-up">
-            
-            <h2 class="font-cyber text-3xl text-center mb-8 text-white"><span class="text-neon-gold">OPEN</span> QR STUDIO</h2>
+    <div class="section-label">Social Media</div>
+    <div class="btn-container" id="socList"></div>
 
-            <!-- Floating Inputs (No Box) -->
-            <div class="space-y-6 mb-10">
-                <div>
-                    <label class="text-xs text-gray-500 uppercase tracking-widest ml-1 font-bold">Target URL / Text</label>
-                    <input type="text" id="qrText" value="https://example.com" class="float-input" placeholder="Enter website link...">
-                </div>
+    <footer>
+      <div class="footer-title" id="footerText">SYSTEM SECURE</div>
+      <div class="footer-sub">© 2026 COPYRIGHT RESERVED</div>
+    </footer>
+  </div>
 
-                <!-- Customization Grid -->
-                <div class="grid grid-cols-2 gap-6">
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase tracking-widest ml-1 font-bold">Pattern</label>
-                        <select id="dotStyle" class="float-input text-sm">
-                            <option value="dots">Dots</option>
-                            <option value="rounded">Rounded</option>
-                            <option value="classy">Classy</option>
-                            <option value="classy-rounded">Classy Round</option>
-                            <option value="square">Square</option>
-                            <option value="extra-rounded">Extra Round</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase tracking-widest ml-1 font-bold">Corners</label>
-                        <select id="cornerStyle" class="float-input text-sm">
-                            <option value="extra-rounded">Soft</option>
-                            <option value="dot">Circle</option>
-                            <option value="square">Sharp</option>
-                        </select>
-                    </div>
-                </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-                <div class="grid grid-cols-2 gap-6">
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase tracking-widest ml-1 font-bold">QR Color</label>
-                        <div class="flex items-center gap-2 mt-2">
-                            <input type="color" id="qrColor" value="#FFD700" class="w-10 h-10 rounded-full border-none cursor-pointer bg-transparent">
-                            <span class="text-sm text-gray-400">Pick</span>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase tracking-widest ml-1 font-bold">Center Logo</label>
-                        <label class="flex items-center gap-2 mt-2 cursor-pointer">
-                            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-neon-gold">
-                                <i class="fa-solid fa-upload"></i>
-                            </div>
-                            <span class="text-xs text-gray-400">Select Image</span>
-                            <input type="file" id="qrLogo" accept="image/*" class="hidden">
-                        </label>
-                    </div>
-                </div>
-            </div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQd1KPVOpI0jBGqPKmwMVM6sNYLZFOtF4",
+      authDomain: "my-bio-59ebd.firebaseapp.com",
+      databaseURL: "https://my-bio-59ebd-default-rtdb.firebaseio.com",
+      projectId: "my-bio-59ebd",
+      storageBucket: "my-bio-59ebd.firebasestorage.app",
+      messagingSenderId: "1010447752701",
+      appId: "1:1010447752701:web:08e124623facf6275d8d94"
+    };
 
-            <!-- Action Button -->
-            <button onclick="updateQR()" class="w-full py-4 border border-neon-gold text-neon-gold font-bold font-cyber rounded-xl hover:bg-neon-gold hover:text-black transition uppercase tracking-widest mb-10">
-                Render Design
-            </button>
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-            <!-- QR Display (Directly on Background, No Container) -->
-            <div class="flex flex-col items-center justify-center">
-                <!-- Wrapper to prevent overflow, but no background color -->
-                <div id="qr-canvas" class="max-w-full overflow-hidden p-2 rounded-xl"></div>
-                
-                <button onclick="downloadHQ()" class="mt-8 text-gray-400 hover:text-white flex items-center gap-2 transition">
-                    <i class="fa-solid fa-download"></i> Save 4K Image
-                </button>
-            </div>
-        </div>
+    const els = {
+      preloader: document.getElementById('preloader'),
+      mainContainer: document.getElementById('mainContainer'),
+      avatar: document.getElementById('userAvatar'),
+      userName: document.getElementById('userName'),
+      userBio: document.getElementById('userBio'),
+      footerText: document.getElementById('footerText'),
+      trackName: document.getElementById('trackName'),
+      trackStatus: document.getElementById('trackStatus'),
+      equalizer: document.getElementById('equalizer'),
+      audio: document.getElementById('audio'),
+      playBtn: document.getElementById('playBtn'),
+      slider: document.getElementById('sliderTrack'),
+      webList: document.getElementById('webList'),
+      socList: document.getElementById('socList'),
+      fav: document.getElementById('dynFavicon')
+    };
 
-        <!-- ID GENERATOR (WITH EMAIL) -->
-        <div id="sec-id-gen" class="view-section hidden anim-up">
-            <div class="glass-box p-6 border-t-4 border-t-blue-500">
-                <h2 class="font-cyber text-2xl mb-6 text-center text-blue-400">IDENTITY CORE</h2>
-                
-                <div class="space-y-5">
-                    <!-- Username -->
-                    <div class="relative">
-                        <div class="absolute top-3 left-4 text-blue-500"><i class="fa-solid fa-user"></i></div>
-                        <input id="genUser" readonly class="w-full bg-black/40 border border-blue-500/30 rounded-xl py-3 pl-12 pr-4 text-blue-100 font-mono" placeholder="Username">
-                        <button onclick="copyTxt('genUser')" class="absolute top-3 right-4 text-gray-500 hover:text-white"><i class="fa-regular fa-copy"></i></button>
-                    </div>
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.addEventListener('keydown', function(e) {
+        if((e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'c')) || e.key === 'F12') { e.preventDefault(); }
+    });
 
-                    <!-- Email (NEW) -->
-                    <div class="relative">
-                        <div class="absolute top-3 left-4 text-red-500"><i class="fa-solid fa-envelope"></i></div>
-                        <input id="genEmail" readonly class="w-full bg-black/40 border border-red-500/30 rounded-xl py-3 pl-12 pr-4 text-red-100 font-mono" placeholder="Email Address">
-                        <button onclick="copyTxt('genEmail')" class="absolute top-3 right-4 text-gray-500 hover:text-white"><i class="fa-regular fa-copy"></i></button>
-                    </div>
+    let sliderInt;
+    function startSlider() {
+      if(sliderInt) clearInterval(sliderInt);
+      const slides = document.querySelectorAll('.slide');
+      if(slides.length < 2) return;
+      let i = 0;
+      sliderInt = setInterval(() => {
+        i = (i + 1) % slides.length;
+        els.slider.style.transform = `translateX(-${i * 100}%)`;
+      }, 3000);
+    }
 
-                    <!-- Password -->
-                    <div class="relative">
-                        <div class="absolute top-3 left-4 text-green-500"><i class="fa-solid fa-key"></i></div>
-                        <input id="genPass" readonly class="w-full bg-black/40 border border-green-500/30 rounded-xl py-3 pl-12 pr-4 text-green-100 font-mono" placeholder="Password">
-                        <button onclick="copyTxt('genPass')" class="absolute top-3 right-4 text-gray-500 hover:text-white"><i class="fa-regular fa-copy"></i></button>
-                    </div>
-
-                    <button onclick="generateFullID()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg mt-4 hover:scale-[1.02] transition font-cyber tracking-wider">
-                        GENERATE NEW ID
-                    </button>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- NAVIGATION -->
-    <nav class="fixed bottom-0 w-full bg-black/90 backdrop-blur-xl h-20 px-8 flex justify-between items-center z-50 border-t border-white/10">
-        <button onclick="switchTab('home')" id="btn-home" class="nav-btn active flex flex-col items-center text-gray-500 transition duration-300">
-            <i class="fa-solid fa-house text-xl mb-1"></i>
-        </button>
-        <div class="w-px h-8 bg-gray-800"></div>
-        <button onclick="switchTab('qr-gen')" id="btn-qr-gen" class="nav-btn flex flex-col items-center text-gray-500 transition duration-300">
-            <i class="fa-solid fa-qrcode text-xl mb-1"></i>
-        </button>
-        <div class="w-px h-8 bg-gray-800"></div>
-        <button onclick="switchTab('id-gen')" id="btn-id-gen" class="nav-btn flex flex-col items-center text-gray-500 transition duration-300">
-            <i class="fa-solid fa-id-card-clip text-xl mb-1"></i>
-        </button>
-    </nav>
-
-    <!-- SCRIPTS -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        // --- 1. SLIDER (AUTO SLIDE ENABLED) ---
-        new Swiper(".mySwiper", {
-            loop: true,
-            effect: "fade",
-            speed: 1000,
-            autoplay: {
-                delay: 3000,
-                disableOnInteraction: false,
-            },
+    if(!sessionStorage.getItem('visited')) {
+        push(ref(db, 'analytics/visits'), {
+            time: Date.now(),
+            source: document.referrer ? new URL(document.referrer).hostname : 'Direct',
+            browser: navigator.userAgent.includes("Chrome") ? "Chrome" : "Browser"
         });
+        sessionStorage.setItem('visited', 'true');
+    }
 
-        // --- 2. ADVANCED QR ENGINE (NO CONTAINER) ---
-        let qrCode;
+    onValue(ref(db, 'settings'), (snap) => {
+      const set = snap.val() || {};
+      if(set.bgImage && set.bgImage.trim() !== "") {
+        document.body.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.7) 0%, #000 100%), url('${set.bgImage}')`;
+      } else {
+        document.body.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.7) 0%, #000 100%), url('https://images.unsplash.com/photo-1534239143101-1b1c627395c5?q=80&w=1000&auto=format&fit=crop')`;
+      }
+      els.userName.innerText = set.username || "User";
+      els.userBio.innerText = set.bio || "";
+      els.avatar.src = set.avatar || "https://via.placeholder.com/150";
+      els.footerText.innerText = set.footer || "SYSTEM SECURE";
+      document.title = set.siteName || "Interface";
+      els.fav.href = set.siteLogo || set.avatar;
+      checkLoad();
+    });
+
+    // --- AUDIO AUTOPLAY & LOGIC ---
+    onValue(ref(db, 'audio'), (snap) => {
+      const data = snap.val();
+      if(data && data.link) {
+        if(data.name && data.name.trim() !== "") {
+            els.trackName.innerText = data.name;
+            els.trackName.classList.remove('scrolling');
+        } else {
+            els.trackName.innerText = "Unknown Track - Playing Now...";
+            els.trackName.classList.add('scrolling');
+        }
+
+        // ভলিউম সেট করা (৪০%)
+        els.audio.volume = 0.4;
+
+        if(els.audio.getAttribute('src') !== data.link) {
+            els.audio.src = data.link;
+            
+            // অটো প্লে করার চেষ্টা
+            const playPromise = els.audio.play();
+            if(playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // অটো প্লে সফল হলে
+                    updatePlayerUI(true);
+                })
+                .catch(error => {
+                    // ব্রাউজার বাধা দিলে
+                    updatePlayerUI(false);
+                });
+            }
+        }
+      } else { 
+          els.trackName.innerText = "No Audio"; 
+          els.trackName.classList.remove('scrolling');
+      }
+      checkLoad();
+    });
+
+    // যদি অটো প্লে ব্যর্থ হয়, তবে পেজে যেকোনো ক্লিকের সাথে সাথে গান চালু হবে
+    document.body.addEventListener('click', function() {
+        if(els.audio.paused && els.audio.src) {
+            els.audio.play();
+            updatePlayerUI(true);
+        }
+    }, { once: true }); // একবার কাজ করলেই লিসেনার রিমুভ হয়ে যাবে
+
+    function updatePlayerUI(isPlaying) {
+        if(isPlaying) {
+            els.playBtn.innerHTML = '<i class="fas fa-pause"></i>'; 
+            els.trackStatus.innerText = "Playing...";
+            els.equalizer.classList.add('playing');
+        } else {
+            els.playBtn.innerHTML = '<i class="fas fa-play"></i>'; 
+            els.trackStatus.innerText = "Paused";
+            els.equalizer.classList.remove('playing');
+        }
+    }
+
+    onValue(ref(db, 'slider'), (snap) => {
+      const data = snap.val();
+      els.slider.innerHTML = "";
+      if(data) {
+        Object.values(data).forEach(url => {
+          els.slider.innerHTML += `<div class="slide"><img src="${url}"></div>`;
+        });
+        startSlider();
+      }
+      checkLoad();
+    });
+
+    onValue(ref(db, 'websites'), (snap) => { renderButtons(snap.val(), els.webList); checkLoad(); });
+    onValue(ref(db, 'socials'), (snap) => { renderButtons(snap.val(), els.socList); checkLoad(); });
+
+    let loadedCount = 0;
+    function checkLoad() {
+        loadedCount++;
+        if(loadedCount >= 3) {
+            setTimeout(() => {
+                els.preloader.style.opacity = '0';
+                els.mainContainer.style.display = 'block';
+                setTimeout(() => { els.preloader.style.display = 'none'; }, 500);
+            }, 800);
+        }
+    }
+
+    function renderButtons(dataObj, container) {
+      container.innerHTML = "";
+      if(!dataObj) return;
+      Object.values(dataObj).forEach(item => {
+        const isLocked = item.password && item.password.trim() !== "";
+        let leftContent = "";
         
-        function initQR() {
-            qrCode = new QRCodeStyling({
-                width: 280,
-                height: 280,
-                type: "svg",
-                data: "https://elite-tools.com",
-                image: "",
-                dotsOptions: { color: "#FFD700", type: "dots" },
-                cornersSquareOptions: { type: "extra-rounded", color: "#FFD700" },
-                cornersDotOptions: { type: "dot", color: "#FFD700" },
-                backgroundOptions: { color: "transparent" }, // Transparent background
-                imageOptions: { crossOrigin: "anonymous", margin: 8 }
-            });
-            document.getElementById("qr-canvas").innerHTML = "";
-            qrCode.append(document.getElementById("qr-canvas"));
+        if(item.icon && item.icon.includes('http')) {
+           leftContent = `<img src="${item.icon}" class="btn-logo-img">`;
+        } else if (item.icon && (item.icon.includes('fa-') || item.icon.includes('fab'))) {
+           leftContent = `<i class="${item.icon} btn-icon-font"></i>`;
+        } else {
+           const domain = item.link && item.link.includes('http') ? new URL(item.link).hostname : '';
+           leftContent = `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64" class="btn-logo-img">`;
         }
+        const rightIcon = isLocked ? '<i class="fas fa-lock btn-right locked"></i>' : '<i class="fas fa-share-alt btn-right"></i>';
 
-        function updateQR() {
-            const text = document.getElementById("qrText").value;
-            const color = document.getElementById("qrColor").value;
-            const dotStyle = document.getElementById("dotStyle").value;
-            const cornerStyle = document.getElementById("cornerStyle").value;
-            const fileInput = document.getElementById("qrLogo");
+        const div = document.createElement('div');
+        div.className = 'universal-btn';
+        const originalHTML = `<div class="btn-left">${leftContent}</div><div class="btn-text">${item.title || 'Link'}</div>${rightIcon}`;
+        div.innerHTML = originalHTML;
 
-            const options = {
-                data: text,
-                dotsOptions: { color: color, type: dotStyle },
-                cornersSquareOptions: { color: color, type: cornerStyle },
-                cornersDotOptions: { color: color, type: "dot" },
-                backgroundOptions: { color: "#ffffff" } // White BG for QR readability only
-            };
+        div.onclick = (e) => {
+          if(e.target.tagName === 'INPUT') return;
+          push(ref(db, 'analytics/clicks'), { time: Date.now(), btnTitle: item.title, link: item.link });
 
-            // If user uploads logo
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = function() {
-                    options.image = reader.result;
-                    qrCode.update(options);
+          if(isLocked) {
+             if(div.querySelector('input')) return;
+             div.innerHTML = `<input type="password" class="inline-pass-input" placeholder="PASSWORD..." autocomplete="off">`;
+             const input = div.querySelector('input');
+             setTimeout(() => input.focus(), 50);
+
+             input.addEventListener('input', (ev) => {
+                if(ev.target.value === item.password) {
+                   input.style.color = "#00ff88"; 
+                   input.blur();
+                   setTimeout(() => { window.location.href = item.link; div.innerHTML = originalHTML; }, 300);
                 }
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                qrCode.update(options);
-            }
-        }
-
-        function downloadHQ() {
-            qrCode.download({ name: "Elite-QR-Ultra", extension: "png" });
-        }
-
-        // --- 3. ID GENERATOR (WITH EMAIL) ---
-        function generateFullID() {
-            const r = Math.floor(Math.random() * 99999);
-            const user = "EliteMaster" + r;
-            const email = "elitemaster" + r + "@gmail.com"; // Email Logic
-            
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789#@";
-            let pass = "";
-            for(let i=0; i<18; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
-            
-            document.getElementById("genUser").value = user;
-            document.getElementById("genEmail").value = email;
-            document.getElementById("genPass").value = pass;
-        }
-
-        function copyTxt(id) {
-            const el = document.getElementById(id);
-            if(el.value) {
-                navigator.clipboard.writeText(el.value);
-                alert("Copied: " + el.value);
-            }
-        }
-
-        // --- 4. NAVIGATION ---
-        function switchTab(tabId) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById('sec-' + tabId).classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('btn-' + tabId).classList.add('active');
-            
-            // Re-render QR if switching to QR tab to ensure size is correct
-            if(tabId === 'qr-gen') {
-                setTimeout(updateQR, 100);
-            }
-        }
-
-        // Init
-        window.onload = () => {
-            initQR();
+             });
+             input.addEventListener('blur', () => { if(input.value === "") setTimeout(() => { div.innerHTML = originalHTML; }, 200); });
+          } else { window.location.href = item.link; }
         };
-    </script>
+        container.appendChild(div);
+      });
+    }
+
+    els.playBtn.addEventListener('click', () => {
+      if(!els.audio.src) return;
+      
+      if(els.audio.paused) { 
+          els.audio.play().then(() => updatePlayerUI(true));
+      } else { 
+          els.audio.pause(); 
+          updatePlayerUI(false);
+      }
+    });
+  </script>
 </body>
 </html>
