@@ -2,342 +2,176 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- ZOOM DISABLED HERE -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Premium Admin Dashboard</title>
-  
-  <link rel="icon" type="image/png" id="adminFavicon" href=""/>
+  <title>Loading...</title>
+
+  <link rel="icon" type="image/png" id="dynFavicon" href=""/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet"/>
   
+  <!-- ALL FONTS LOADED -->
+  <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Bangers&family=Bebas+Neue&family=Cinzel:wght@400;700&family=Creepster&family=Dancing+Script:wght@400;700&family=Lobster&family=Monoton&family=Orbitron:wght@400;700;900&family=Oswald:wght@400;700&family=Poppins:wght@300;400;600&family=Rajdhani:wght@400;600;700&family=Rock+Salt&family=Satisfy&display=swap" rel="stylesheet"/>
+
   <style>
-    :root { --main: #00f2ff; --bg: #050505; --glass: rgba(20,20,20,0.8); --border: rgba(255,255,255,0.1); }
+    :root {
+        --user-font: 'Rajdhani', sans-serif;
+        --btn-base: #151515; 
+        --audio-color: #00f2ff;
+    }
     
-    /* --- CRITICAL: DISABLE SELECT & ZOOM --- */
-    * { 
-      margin:0; padding:0; box-sizing:border-box; outline:none; 
-      font-family: 'Rajdhani', sans-serif; 
-      -webkit-tap-highlight-color: transparent;
-      
-      /* Disable Selection */
-      -webkit-user-select: none; /* Safari */
-      -moz-user-select: none; /* Firefox */
-      -ms-user-select: none; /* IE10+/Edge */
-      user-select: none; /* Standard */
-      
-      /* Disable Long Press Menu (iOS) */
-      -webkit-touch-callout: none;
-    }
-
-    /* Enable Selection & Menu ONLY for Inputs */
-    input, textarea { 
-      -webkit-user-select: text !important; 
-      user-select: text !important; 
-      -webkit-touch-callout: default !important;
-    }
-
-    /* Disable Zoom Gestures */
-    html, body { 
-      touch-action: pan-x pan-y; /* Disables pinch zoom */
-      overflow-x: hidden; 
-      background-color: var(--bg); 
-      background-size: cover; background-position: center; background-attachment: fixed;
-      color: #fff; padding-bottom: 80px; transition: background 0.3s;
-    }
-
-    /* --- LOADER --- */
-    #loaderOverlay {
-      position: fixed; inset: 0; background: #000; z-index: 10000;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .spinner {
-      width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1);
-      border-top: 3px solid var(--main); border-radius: 50%;
-      animation: spin 1s linear infinite; margin-bottom: 15px;
-      box-shadow: 0 0 10px var(--main);
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .loading-text { letter-spacing: 2px; font-size: 0.9rem; font-weight: bold; color: var(--main); animation: pulse 1.5s infinite; }
-
-    /* --- LOGIN --- */
-    #loginOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-    .login-box { 
-      width: 90%; max-width: 320px; padding: 40px 25px; background: rgba(10,10,10,0.8); 
-      border: 1px solid var(--border); border-radius: 15px; text-align: center;
-      box-shadow: 0 0 30px rgba(0,242,255,0.1);
-    }
-    .login-logo { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 20px; border: 2px solid var(--main); padding: 4px; }
-    .login-input { 
-      width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid #333; 
-      color: var(--main); text-align: center; margin: 20px 0; border-radius: 8px; font-size: 1.1rem; letter-spacing: 3px; font-weight: bold;
-    }
-
-    /* --- HEADER --- */
-    header {
-      background: rgba(5,5,5,0.9); backdrop-filter: blur(10px); padding: 12px 20px; border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-    .header-left { display: flex; align-items: center; gap: 10px; }
-    .admin-logo { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--main); }
-    .admin-title { font-size: 1.2rem; color: #fff; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-    .settings-btn { font-size: 1.4rem; color: var(--main); cursor: pointer; transition: 0.3s; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+    input, textarea { -webkit-user-select: text; user-select: text; }
     
-    /* --- DASHBOARD UI --- */
-    .container { padding: 15px; max-width: 100%; margin: 0 auto; }
-    
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .stat-card { 
-      background: rgba(255,255,255,0.03); 
-      padding: 15px; border-radius: 10px; border: 1px solid var(--border); 
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      transition: 0.2s; position: relative;
+    html, body {
+        height: 100%; overflow: hidden; background: #000; 
+        background-size: cover; background-position: center; background-attachment: fixed;
+        color: #fff; font-family: var(--user-font) !important;
+        touch-action: pan-y; overscroll-behavior-y: none;
     }
-    .stat-card:active { transform: scale(0.98); }
-    .stat-num { font-size: 1.8rem; font-weight: 700; color: #fff; line-height: 1.1; }
-    .stat-label { font-size: 0.75rem; color: var(--main); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 5px; }
-    .live-dot { width: 8px; height: 8px; background: #00ff88; border-radius: 50%; position: absolute; top: 10px; right: 10px; box-shadow: 0 0 5px #00ff88; animation: pulse 1s infinite; }
 
-    /* Compact Lists */
-    .compact-box { 
-      background: rgba(15,15,15,0.5); border-radius: 10px; padding: 15px; margin-bottom: 20px; 
-      border: 1px solid var(--border);
+    .username, .btn-text, .section-label, .loader-text { font-family: var(--user-font) !important; }
+    footer, .footer-title, .footer-sub { font-family: 'Orbitron', sans-serif !important; }
+
+    /* --- FAST PRELOADER --- */
+    #preloader { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+    .loader-ring { 
+        width: 60px; height: 60px; 
+        border: 4px solid rgba(255, 255, 255, 0.1); 
+        border-top-color: #00f2ff; border-bottom-color: #ff00e5;
+        border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 20px; 
     }
-    .box-title { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; border-left: 3px solid var(--main); padding-left: 8px; }
-    
-    .source-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: 0.8rem; }
-    .source-name { color: #ccc; width: 35%; display: flex; align-items: center; gap: 6px; }
-    .source-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin: 0 10px; overflow: hidden; }
-    .source-fill { height: 100%; background: var(--main); border-radius: 2px; }
-    .source-count { color: #fff; width: 15%; text-align: right; font-weight: bold; }
+    .loader-text { letter-spacing: 3px; font-size: 0.9rem; animation: pulse 1.5s infinite; color: #fff; font-weight: bold; }
 
-    .log-item { 
-      font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; 
-      display: flex; justify-content: space-between; align-items: center;
+    .main-container { width: 100%; height: 100%; overflow-y: auto; max-width: 500px; margin: 0 auto; padding: 30px 20px 20px 20px; text-align: center; display: none; overscroll-behavior-y: none; opacity: 0; transition: opacity 0.5s ease; }
+    .main-container.show { opacity: 1; }
+
+    .profile-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; }
+    
+    .avatar-wrapper { position: relative; width: 100px; height: 100px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; border-radius: 50%; }
+    
+    .avatar-wrapper::before { 
+        content: ''; position: absolute; inset: 0; border-radius: 50%; z-index: 0; background: transparent; 
+        box-shadow: 0 0 15px #00f2ff; 
+        animation: breatheGlow 2.5s ease-in-out infinite alternate, hueRotate 10s linear infinite; 
     }
-    .log-left { display: flex; flex-direction: column; gap: 2px; }
-    .log-title { color: #fff; font-weight: 600; }
-    .log-sub { color: #666; font-size: 0.7rem; }
-    .log-right { background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; color: var(--main); font-size: 0.65rem; border: 1px solid rgba(255,255,255,0.1); }
-
-    /* --- INPUTS --- */
-    .tab-section { display: none; animation: fadeIn 0.3s ease; }
-    .tab-section.active { display: block; }
-    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
     
-    .field-group { margin-bottom: 12px; }
-    .label { font-size: 0.7rem; color: var(--main); margin-bottom: 5px; display: block; font-weight: 700; text-transform: uppercase; }
-    .input-box { display: flex; align-items: center; background: rgba(0,0,0,0.3); border: 1px solid #333; border-radius: 6px; overflow: hidden; }
-    .icon-box { width: 35px; height: 38px; display: flex; align-items: center; justify-content: center; color: #666; border-right: 1px solid #333; font-size: 0.9rem; }
-    input, textarea { width: 100%; background: transparent; border: none; color: #fff; padding: 0 10px; font-size: 0.9rem; height: 38px; }
-    
-    .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; margin-top: 15px; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-    .btn-save { background: var(--main); color: #000; }
-    .btn-add { background: linear-gradient(45deg, #00ff88, #00cc6a); color: #000; }
-    .btn-del { background: #ff3333; color: #fff; box-shadow: 0 0 10px rgba(255, 51, 51, 0.3); }
-    .btn-upd { background: #ff00e5; color: #fff; display: none; }
-    .btn-reset { background: #222; border: 1px solid #ff3333; color: #ff3333; margin-top:5px; }
-    .btn-reset:active { background: #ff3333; color: #fff; }
-    
-    /* List Items with Copy Button */
-    .list-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.04); padding: 10px; margin-top: 8px; border-radius: 6px; border: 1px solid var(--border); }
-    .list-actions { display: flex; gap: 5px; }
-    .btn-icon { width: 32px; height: 32px; border: 1px solid #333; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-
-    /* --- SIDE PANEL (SETTINGS) --- */
-    .side-panel {
-      position: fixed; top: 0; right: -320px; width: 300px; height: 100vh;
-      background: #0a0a0a; border-left: 2px solid var(--main); z-index: 200;
-      transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 25px;
-      box-shadow: -10px 0 50px rgba(0,0,0,0.9); overflow-y: auto;
+    .ring { 
+        position: absolute; inset: -1px; border-radius: 50%; z-index: 1; 
+        background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #00f2ff 100%); 
+        animation: spin 1.5s linear infinite, hueRotate 10s linear infinite; 
     }
-    .side-panel.open { right: 0; }
-    .side-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-    .side-title { font-size: 1.2rem; color: #fff; letter-spacing: 2px; text-transform: uppercase; }
-    .close-btn { color: #f00; cursor: pointer; font-size: 1.5rem; }
+    
+    .avatar-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; z-index: 2; position: relative; border: 2px solid rgba(0,0,0,0.3); }
+    
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes breatheGlow { 0% { opacity: 0.5; box-shadow: 0 0 10px #00f2ff; } 100% { opacity: 1.0; box-shadow: 0 0 35px #00f2ff; } }
+    @keyframes hueRotate { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
 
-    .color-circles { display: flex; gap: 8px; margin-bottom: 10px; }
-    .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid #333; transition: 0.2s; position: relative; }
+    .username { font-size: 1.8rem; font-weight: 900; background: linear-gradient(90deg, #fff, #00f2ff, #ff00e5, #fff); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: textShine 4s linear infinite; margin-bottom: 5px; letter-spacing: 1px; }
+    @keyframes textShine { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+    .bio { font-size: 0.9rem; color: #aaa; max-width: 90%; line-height: 1.4; }
 
-    /* --- NAVIGATION --- */
-    .nav { 
-      position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; 
-      background: rgba(10,10,10,0.95); border-top: 1px solid #333; 
-      display: flex; justify-content: space-around; align-items: center; z-index: 100;
-      backdrop-filter: blur(10px);
-    }
-    .nav-item { color: #666; font-size: 0.7rem; cursor: pointer; text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
-    .nav-item i { font-size: 1.3rem; margin-bottom: 4px; transition: 0.3s; }
-    .nav-item.active { color: var(--main); }
-    .nav-item.active i { transform: translateY(-5px); text-shadow: 0 0 10px var(--main); }
+    .audio-player { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; padding: 6px 15px 6px 6px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
+    .play-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: var(--audio-color); color: #000; font-size: 0.9rem; cursor: pointer; display: flex; justify-content: center; align-items: center; z-index: 2; transition:0.3s; }
+    .track-info { flex: 1; text-align: left; overflow: hidden; z-index: 2; position: relative; mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
+    .track-name { font-size: 0.85rem; font-weight: 700; color: #fff; display: inline-block; padding-left: 100%; animation: scrollText 10s linear infinite; }
+    @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+    .track-status { font-size: 0.65rem; color: var(--audio-color); text-transform: uppercase; margin-top: -2px; font-weight: bold; }
 
-    .toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--main); color: #000; padding: 10px 25px; border-radius: 30px; font-weight: bold; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 999; box-shadow: 0 0 20px var(--main); font-size: 0.8rem; }
-    .toast.show { opacity: 1; top: 90px; }
+    .equalizer { display: flex; gap: 4px; align-items: flex-end; height: 20px; margin-left: 5px; z-index: 2; opacity: 0.6; transition: 0.3s; }
+    .equalizer.playing { opacity: 1; }
+    .bar { width: 4px; border-radius: 2px; height: 3px; background: linear-gradient(to top, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff); background-size: 100% 400%; }
+    .equalizer.playing .bar:nth-child(1) { animation: bounce 0.4s infinite alternate, rainbowFlow 2s linear infinite; }
+    .equalizer.playing .bar:nth-child(2) { animation: bounce 0.6s infinite alternate 0.1s, rainbowFlow 2.3s linear infinite; }
+    .equalizer.playing .bar:nth-child(3) { animation: bounce 0.5s infinite alternate 0.2s, rainbowFlow 2.6s linear infinite; }
+    @keyframes bounce { 0% { height: 4px; } 100% { height: 22px; } }
+    @keyframes rainbowFlow { 0% { background-position: 0% 100%; filter: hue-rotate(0deg); } 100% { background-position: 0% 0%; filter: hue-rotate(360deg); } }
+
+    .slider-box { width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.15); position: relative; pointer-events: none; }
+    .slider-track { display: flex; height: 100%; transition: transform 0.5s ease-in-out; }
+    .slide { min-width: 100%; height: 100%; }
+    .slide img { width: 100%; height: 100%; object-fit: cover; }
+
+    .section-label { font-size: 0.75rem; color: #555; letter-spacing: 3px; margin: 25px 0 10px; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
+    .btn-container { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 10px; }
+    
+    .universal-btn { position: relative; height: 55px; width: 100%; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer; overflow: hidden; }
+    .universal-btn:hover { transform: scale(1.02); }
+
+    /* STYLES */
+    .style-default { background: linear-gradient(90deg, var(--btn-base), #000); border: 1px solid #00f2ff; }
+    .style-glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-left: 3px solid var(--btn-base); }
+    .style-neon { background: transparent; border: 1px solid var(--btn-base); box-shadow: 0 0 5px var(--btn-base), inset 0 0 10px rgba(0,0,0,0.5); }
+    .style-neon .btn-text { text-shadow: 0 0 5px var(--btn-base); }
+    .style-flat { background: var(--btn-base); border: none; border-radius: 4px; }
+    .style-3d { background: var(--btn-base); border: 1px solid rgba(255,255,255,0.1); border-bottom: 4px solid #000; transform: translateY(0); border-radius: 6px; }
+    .style-3d:active { transform: translateY(2px); border-bottom: 2px solid #000; }
+    .style-round { background: var(--btn-base); border-radius: 50px; border: 1px solid rgba(255,255,255,0.2); }
+    .style-cyber { background: var(--btn-base); clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px); border-left: 4px solid #fff; text-transform: uppercase; }
+    .style-cyber:hover { background: #fff; } .style-cyber:hover .btn-text { color: #000; } .style-cyber:hover .btn-icon-font { color: #000; }
+    .style-neumorph { background: #111; border-radius: 12px; box-shadow:  5px 5px 10px #080808, -5px -5px 10px #1a1a1a; border: 1px solid #1a1a1a; }
+    .style-neumorph:active { box-shadow: inset 5px 5px 10px #080808, inset -5px -5px 10px #1a1a1a; }
+    .style-retro { background: #000; border: 2px solid var(--btn-base); box-shadow: 4px 4px 0px var(--btn-base); border-radius: 0; }
+    .style-retro:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--btn-base); }
+    .style-grad-border { background: #000; border: 2px solid transparent; background-image: linear-gradient(#000, #000), linear-gradient(45deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f); background-origin: border-box; background-clip: padding-box, border-box; border-radius: 10px; }
+    .style-stripe { background: repeating-linear-gradient(45deg, var(--btn-base), var(--btn-base) 10px, rgba(0,0,0,0.8) 10px, rgba(0,0,0,0.8) 20px); border: 1px solid rgba(255,255,255,0.3); }
+    .style-stripe .btn-text { background: #000; padding: 2px 8px; border-radius: 4px; }
+    .style-pulse { background: transparent; border: 1px solid var(--btn-base); border-radius: 50px; box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7); animation: btnPulse 2s infinite; }
+    @keyframes btnPulse { 0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); } 100% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); } }
+
+    .btn-left { position: absolute; left: 10px; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+    .btn-logo-img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+    .btn-icon-font { font-size: 1.3rem; color: #fff; }
+    .btn-text { font-size: 0.95rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; z-index: 2; pointer-events: none; }
+    .btn-right { position: absolute; right: 15px; font-size: 1rem; color: #ccc; transition: 0.3s; }
+    .btn-right.locked { color: #ff3333; text-shadow: 0 0 5px rgba(255, 51, 51, 0.5); }
+    
+    .inline-pass-input { width: 100%; height: 100%; background: #000; border: none; color: var(--btn-base); text-align: center; font-size: 1.2rem; letter-spacing: 3px; outline: none; padding: 0 10px; animation: glow 1s infinite alternate; z-index: 10; }
+
+    footer { margin-top: 50px; padding: 10px 20px 2px 20px; border-top: 1px solid #fff; background: linear-gradient(0deg, rgba(255,255,255,0.05) 0%, transparent 100%); text-align: center; }
+    .footer-title { font-size: 1rem; color: #fff; letter-spacing: 2px; margin-bottom: 5px; font-weight: 800; pointer-events: none; }
+    .footer-sub { font-size: 0.7rem; color: #fff; letter-spacing: 1px; pointer-events: none; }
   </style>
+
 </head>
 <body>
+  <div id="preloader"><div class="loader-ring"></div><div class="loader-text">SYNCING DATA...</div></div>
 
-  <div id="loaderOverlay">
-    <div class="spinner"></div>
-    <div class="loading-text">INITIALIZING...</div>
+  <div class="main-container" id="mainContainer">
+    <div class="profile-section">
+      <div class="avatar-wrapper">
+        <div class="ring"></div>
+        <img src="" class="avatar-img" id="userAvatar">
+      </div>
+      <div class="username" id="userName">...</div>
+      <div class="bio" id="userBio"></div>
+    </div>
+
+    <!-- AUDIO PLAYER -->
+    <div class="audio-player">
+      <button class="play-btn" id="playBtn"><i class="fas fa-play"></i></button>
+      <div class="track-info">
+        <div class="track-name-container"><div class="track-name" id="trackName">Loading Music...</div></div>
+        <div class="track-status" id="trackStatus">Tap to Play</div>
+      </div>
+      <div class="equalizer" id="equalizer"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+    </div>
+    <audio id="audio" preload="auto"></audio>
+
+    <div class="slider-box"><div class="slider-track" id="sliderTrack"></div></div>
+    <div class="section-label">Websites</div>
+    <div class="btn-container" id="webList"></div>
+    <div class="section-label">Social Media</div>
+    <div class="btn-container" id="socList"></div>
+
+    <footer>
+      <div class="footer-title" id="footerText">SYSTEM SECURE</div>
+      <div class="footer-sub">© 2026 COPYRIGHT RESERVED</div>
+    </footer>
   </div>
-
-  <div id="loginOverlay">
-    <div class="login-box">
-      <img src="" class="login-logo" id="loginLogo">
-      <h3 style="color:#fff; margin-bottom:10px; font-weight:700;">SECURE ADMIN</h3>
-      <input type="password" id="adminPass" class="login-input" placeholder="PASSCODE">
-      <button class="btn btn-save" onclick="tryLogin()">UNLOCK</button>
-    </div>
-  </div>
-
-  <div id="appContainer" style="display:none;">
-    
-    <header>
-      <div class="header-left">
-        <img src="" class="admin-logo" id="headerLogo">
-        <div class="admin-title" id="headerTitle">ADMIN</div>
-      </div>
-      <div class="settings-btn" onclick="toggleSettings()"><i class="fas fa-cog"></i></div>
-    </header>
-
-    <div class="container">
-      
-      <!-- TAB 0: HOME -->
-      <div id="tab0" class="tab-section active">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="live-dot"></div>
-            <div class="stat-num" id="totalVisits">0</div>
-            <div class="stat-label">Real Users (7 Days)</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num" id="totalClicks">0</div>
-            <div class="stat-label">Link Clicks</div>
-          </div>
-        </div>
-        
-        <div style="margin-bottom:20px;">
-           <button class="btn btn-reset" onclick="resetAnalytics()"><i class="fas fa-trash"></i> CLEAR ALL ANALYTICS</button>
-        </div>
-
-        <div class="compact-box">
-            <div class="box-title"><span>Top Sources</span> <i class="fas fa-share-alt"></i></div>
-            <div id="sourceList">
-                <div style="text-align:center;color:#555;font-size:0.8rem;">Waiting for users...</div>
-            </div>
-        </div>
-        
-        <div class="compact-box">
-            <div class="box-title"><span>Real-Time Logs</span> <i class="fas fa-list"></i></div>
-            <div id="activityLog"></div>
-        </div>
-      </div>
-
-      <!-- TAB 1: IDENTITY -->
-      <div id="tab1" class="tab-section">
-        <div class="field-group"><label class="label">Website Name</label><div class="input-box"><div class="icon-box"><i class="fas fa-globe"></i></div><input type="text" id="siteName"></div></div>
-        <div class="field-group"><label class="label">Website Logo URL</label><div class="input-box"><div class="icon-box"><i class="fas fa-image"></i></div><input type="text" id="siteLogo"></div></div>
-        <div class="field-group"><label class="label">User Panel Background</label><div class="input-box"><div class="icon-box"><i class="fas fa-mobile-alt"></i></div><input type="text" id="userBgUrl" placeholder="Image URL"></div></div>
-        <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-        <div class="field-group"><label class="label">Username</label><div class="input-box"><div class="icon-box"><i class="fas fa-user"></i></div><input type="text" id="username"></div></div>
-        <div class="field-group"><label class="label">Avatar URL</label><div class="input-box"><div class="icon-box"><i class="fas fa-user-circle"></i></div><input type="text" id="avatar"></div></div>
-        <div class="field-group"><label class="label">Bio</label><div class="input-box"><div class="icon-box"><i class="fas fa-pen"></i></div><input type="text" id="bio"></div></div>
-        <div class="field-group"><label class="label">Footer Text</label><div class="input-box"><div class="icon-box"><i class="fas fa-copyright"></i></div><input type="text" id="footer"></div></div>
-        <button class="btn btn-save" onclick="saveProfile()">SAVE IDENTITY</button>
-      </div>
-
-      <!-- TAB 2: MEDIA -->
-      <div id="tab2" class="tab-section">
-        <div class="field-group"><label class="label">Track Name</label><div class="input-box"><div class="icon-box"><i class="fas fa-music"></i></div><input type="text" id="audioName"></div></div>
-        <div class="field-group"><label class="label">MP3 URL</label><div class="input-box"><div class="icon-box"><i class="fas fa-link"></i></div><input type="text" id="audioLink"></div></div>
-        <button class="btn btn-save" onclick="saveAudio()">UPDATE AUDIO</button>
-        <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-        <div class="field-group"><label class="label">Image URL</label><div class="input-box"><div class="icon-box"><i class="fas fa-image"></i></div><input type="text" id="slideUrl"></div></div>
-        <button class="btn btn-add" onclick="addSlide()">ADD IMAGE</button>
-        <div id="sliderList"></div>
-      </div>
-
-      <!-- TAB 3: LINKS -->
-      <div id="tab3" class="tab-section">
-        <input type="hidden" id="webKey">
-        <div class="field-group"><label class="label">Button Title</label><div class="input-box"><div class="icon-box"><i class="fas fa-tag"></i></div><input type="text" id="webTitle"></div></div>
-        <div class="field-group"><label class="label">Logo / Icon URL</label><div class="input-box"><div class="icon-box"><i class="fas fa-icons"></i></div><input type="text" id="webIcon"></div></div>
-        <div class="field-group"><label class="label">Link URL</label><div class="input-box"><div class="icon-box"><i class="fas fa-link"></i></div><input type="text" id="webLink"></div></div>
-        <div class="field-group"><label class="label">Password (Optional)</label><div class="input-box"><div class="icon-box"><i class="fas fa-lock"></i></div><input type="text" id="webPass"></div></div>
-        <button class="btn btn-add" id="btnAddWeb" onclick="addWeb()">ADD LINK</button>
-        <button class="btn btn-upd" id="btnUpdWeb" onclick="updWeb()">UPDATE LINK</button>
-        <div id="webList"></div>
-      </div>
-
-      <!-- TAB 4: SOCIALS -->
-      <div id="tab4" class="tab-section">
-        <input type="hidden" id="socKey">
-        <div class="field-group"><label class="label">Name</label><div class="input-box"><div class="icon-box"><i class="fas fa-tag"></i></div><input type="text" id="socTitle"></div></div>
-        <div class="field-group"><label class="label">Icon Class</label><div class="input-box"><div class="icon-box"><i class="fas fa-icons"></i></div><input type="text" id="socIcon"></div></div>
-        <div class="field-group"><label class="label">Link URL</label><div class="input-box"><div class="icon-box"><i class="fas fa-link"></i></div><input type="text" id="socLink"></div></div>
-        <div class="field-group"><label class="label">Password (Optional)</label><div class="input-box"><div class="icon-box"><i class="fas fa-lock"></i></div><input type="text" id="socPass"></div></div>
-        <button class="btn btn-add" id="btnAddSoc" onclick="addSoc()">ADD SOCIAL</button>
-        <button class="btn btn-upd" id="btnUpdSoc" onclick="updSoc()">UPDATE SOCIAL</button>
-        <div id="socList"></div>
-      </div>
-    </div>
-
-    <!-- SIDE PANEL (SETTINGS) -->
-    <div class="side-panel" id="settingsSidepanel">
-      <div class="side-header">
-          <h3 class="side-title">CONFIG</h3>
-          <i class="fas fa-times close-btn" onclick="toggleSettings()"></i>
-      </div>
-      
-      <div class="field-group">
-        <label class="label">Accent Color</label>
-        <div class="color-circles">
-           <div class="color-dot" style="background:#00f2ff;" onclick="setTheme('#00f2ff')"></div>
-           <div class="color-dot" style="background:#ff00e5;" onclick="setTheme('#ff00e5')"></div>
-           <div class="color-dot" style="background:#00ff88;" onclick="setTheme('#00ff88')"></div>
-           <div class="color-dot" style="background:#ff9900;" onclick="setTheme('#ff9900')"></div>
-        </div>
-        <div class="input-box"><div class="icon-box"><i class="fas fa-palette"></i></div><input type="text" id="themeColor" placeholder="HEX Code"></div>
-      </div>
-
-      <div class="field-group">
-        <label class="label">Admin Background</label>
-        <div class="color-circles">
-            <div class="color-dot" style="background:#050505;" onclick="setAdminBg('#050505')"></div>
-            <div class="color-dot" style="background:#001e1d;" onclick="setAdminBg('#001e1d')"></div>
-            <div class="color-dot" style="background:#1a0b2e;" onclick="setAdminBg('#1a0b2e')"></div>
-            <div class="color-dot" style="background:#240b0b;" onclick="setAdminBg('#240b0b')"></div>
-        </div>
-        <input type="hidden" id="adminBgColor" value="#050505">
-        <div class="input-box"><div class="icon-box"><i class="fas fa-image"></i></div><input type="text" id="adminBgUrl" placeholder="Image URL" oninput="setAdminBg(document.getElementById('adminBgColor').value)"></div>
-      </div>
-      
-      <hr style="border-top:1px solid #222; margin:15px 0;">
-
-      <div class="field-group"><label class="label">Admin Panel Name</label><div class="input-box"><div class="icon-box"><i class="fas fa-heading"></i></div><input type="text" id="adminName"></div></div>
-      <div class="field-group"><label class="label">Admin Logo URL</label><div class="input-box"><div class="icon-box"><i class="fas fa-id-badge"></i></div><input type="text" id="adminLogo"></div></div>
-      <div class="field-group"><label class="label">Admin Favicon</label><div class="input-box"><div class="icon-box"><i class="fas fa-star"></i></div><input type="text" id="adminFav"></div></div>
-      <div class="field-group"><label class="label">New Admin Password</label><div class="input-box"><div class="icon-box"><i class="fas fa-key"></i></div><input type="text" id="newAdminPass"></div></div>
-      
-      <button class="btn btn-save" onclick="saveConfig()">SAVE CHANGES</button>
-    </div>
-
-    <!-- NAVIGATION -->
-    <div class="nav">
-      <div class="nav-item active" onclick="tab('tab0', this)"><i class="fas fa-chart-pie"></i>Home</div>
-      <div class="nav-item" onclick="tab('tab1', this)"><i class="fas fa-user"></i>Profile</div>
-      <div class="nav-item" onclick="tab('tab2', this)"><i class="fas fa-play"></i>Media</div>
-      <div class="nav-item" onclick="tab('tab3', this)"><i class="fas fa-link"></i>Links</div>
-      <div class="nav-item" onclick="tab('tab4', this)"><i class="fas fa-share-alt"></i>Social</div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast">Saved Successfully</div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, push, remove, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCQd1KPVOpI0jBGqPKmwMVM6sNYLZFOtF4",
@@ -352,214 +186,207 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    let realAdminPass = "12233";
-    let dataLoaded = false;
-    window.websitesData = {};
-    window.socialsData = {};
+    const els = {
+      preloader: document.getElementById('preloader'), mainContainer: document.getElementById('mainContainer'),
+      avatar: document.getElementById('userAvatar'), userName: document.getElementById('userName'),
+      userBio: document.getElementById('userBio'), footerText: document.getElementById('footerText'),
+      trackName: document.getElementById('trackName'), trackStatus: document.getElementById('trackStatus'),
+      equalizer: document.getElementById('equalizer'), audio: document.getElementById('audio'),
+      playBtn: document.getElementById('playBtn'), slider: document.getElementById('sliderTrack'),
+      webList: document.getElementById('webList'), socList: document.getElementById('socList'), fav: document.getElementById('dynFavicon')
+    };
 
-    // --- PREVENT CONTEXT MENU (Right Click / Long Press) ---
-    document.addEventListener("contextmenu", function(e){
-        if (e.target.nodeName === "INPUT" || e.target.nodeName === "TEXTAREA") {
-            return true; // Allow in inputs
+    // --- OPTIMIZED LOADING LOGIC ---
+    // We only wait for SETTINGS to show the site. Links/Audio will load in background.
+    let isSiteRevealed = false;
+
+    function revealSite() {
+        if(!isSiteRevealed) {
+            isSiteRevealed = true;
+            els.preloader.style.opacity = '0';
+            els.mainContainer.style.display = 'block';
+            setTimeout(() => {
+                els.mainContainer.classList.add('show');
+                els.preloader.style.display = 'none';
+            }, 500);
         }
-        e.preventDefault();
-        return false;
-    });
-
-    // --- COPY FUNCTION ---
-    window.copyText = (text) => {
-        if (!text) return;
-        navigator.clipboard.writeText(text).then(() => {
-            const t = document.getElementById('toast'); 
-            t.innerText="Link Copied!"; t.classList.add('show'); 
-            setTimeout(()=>t.classList.remove('show'),2000);
-        });
-    };
-
-    window.setTheme = (color) => { document.getElementById('themeColor').value = color; document.documentElement.style.setProperty('--main', color); };
-    window.setAdminBg = (color) => {
-        document.getElementById('adminBgColor').value = color;
-        const img = document.getElementById('adminBgUrl').value;
-        document.body.style.backgroundColor = color;
-        document.documentElement.style.setProperty('--bg', color);
-        if(img && img.trim() !== "") document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('${img}')`;
-        else document.body.style.backgroundImage = 'none';
-    };
-
-    window.tryLogin = () => { if(document.getElementById('adminPass').value === realAdminPass) { localStorage.setItem('adminLoginTime', Date.now()); showApp(); } else alert("Invalid Passcode"); };
-    function checkSession() { const t = localStorage.getItem('adminLoginTime'); return t && (Date.now() - parseInt(t) < 5 * 60 * 1000); }
-    function showApp() { document.getElementById('loaderOverlay').style.display='none'; document.getElementById('loginOverlay').style.display='none'; document.getElementById('appContainer').style.display='block'; }
-    function showLogin() { document.getElementById('loaderOverlay').style.display='none'; document.getElementById('appContainer').style.display='none'; document.getElementById('loginOverlay').style.display='flex'; }
-
-    window.tab = (id, el) => {
-      document.querySelectorAll('.tab-section').forEach(t=>t.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-      el.classList.add('active');
-    };
-    window.toggleSettings = () => document.getElementById('settingsSidepanel').classList.toggle('open');
-    const toast = (m) => { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); };
-
-    // --- MAIN DATA ---
-    onValue(ref(db, '/'), (snap) => {
-      const data = snap.val() || {};
-      const set = data.settings || {};
-      const adm = data.adminConfig || {};
-      
-      // 7 DAYS CLEANUP
-      const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
-      const now = Date.now();
-      const stats = data.analytics || {};
-      if(stats.visits) {
-          Object.entries(stats.visits).forEach(([key, val]) => {
-              if (val.timestamp && (now - val.timestamp > ONE_WEEK)) {
-                  remove(ref(db, `analytics/visits/${key}`));
-              }
-          });
-      }
-
-      realAdminPass = adm.password || "12233";
-      document.getElementById('adminName').value = adm.name || "ADMIN";
-      document.getElementById('headerTitle').innerText = adm.name || "ADMIN";
-      document.getElementById('adminLogo').value = adm.logo || "";
-      document.getElementById('headerLogo').src = adm.logo || "https://via.placeholder.com/40";
-      document.getElementById('loginLogo').src = adm.logo || "https://cdn-icons-png.flaticon.com/512/295/295128.png";
-      if(adm.favicon) document.getElementById('adminFavicon').href = adm.favicon;
-      
-      if(adm.themeColor) window.setTheme(adm.themeColor);
-      const savedBgColor = adm.bgColor || "#050505";
-      const savedBgImg = adm.bgImage || "";
-      document.getElementById('adminBgColor').value = savedBgColor;
-      document.getElementById('adminBgUrl').value = savedBgImg;
-      window.setAdminBg(savedBgColor);
-
-      document.getElementById('siteName').value = set.siteName || "";
-      document.getElementById('siteLogo').value = set.siteLogo || "";
-      document.getElementById('userBgUrl').value = set.bgImage || ""; 
-      document.getElementById('username').value = set.username || "";
-      document.getElementById('avatar').value = set.avatar || "";
-      document.getElementById('bio').value = set.bio || "";
-      document.getElementById('footer').value = set.footer || "";
-      
-      if(data.audio) { document.getElementById('audioName').value=data.audio.name||""; document.getElementById('audioLink').value=data.audio.link||""; }
-      
-      const sList = document.getElementById('sliderList'); sList.innerHTML="";
-      if(data.slider) Object.entries(data.slider).forEach(([k,v])=>{ 
-          sList.innerHTML+=`
-          <div class="list-item">
-            <div class="info"><img src="${v}" style="width:30px;height:30px;object-fit:cover;margin-right:8px;border-radius:4px;"><span>Image</span></div>
-            <div class="list-actions">
-                <button class="btn-icon" style="background:#222;color:var(--main);" onclick="copyText('${v}')"><i class="fas fa-copy"></i></button>
-                <button class="btn-icon" style="background:#333;color:#f00;" onclick="del('slider/${k}')"><i class="fas fa-trash"></i></button>
-            </div>
-          </div>`; 
-      });
-
-      // ANALYTICS
-      const visits = stats.visits ? Object.values(stats.visits) : [];
-      const clicks = stats.clicks ? Object.values(stats.clicks) : [];
-      document.getElementById('totalVisits').innerText = visits.length;
-      document.getElementById('totalClicks').innerText = clicks.length;
-
-      const sources = {};
-      visits.forEach(v => { 
-          let src = v.source || 'Direct';
-          if(src.toLowerCase().includes('tiktok')) src = 'TikTok';
-          else if(src.toLowerCase().includes('facebook') || src.toLowerCase().includes('fb')) src = 'Facebook';
-          else if(src.toLowerCase().includes('instagram')) src = 'Instagram';
-          else if(src.toLowerCase().includes('youtube')) src = 'YouTube';
-          sources[src] = (sources[src] || 0) + 1; 
-      });
-      
-      const sourceContainer = document.getElementById('sourceList'); sourceContainer.innerHTML = "";
-      if(visits.length === 0) sourceContainer.innerHTML = '<div style="text-align:center;color:#555;">No visits yet.</div>';
-      Object.entries(sources).sort((a,b)=>b[1]-a[1]).slice(0, 5).forEach(([src, count]) => {
-        const percent = Math.round((count / visits.length) * 100);
-        let icon = 'fa-link';
-        if(src==='TikTok') icon='fa-tiktok';
-        if(src==='Facebook') icon='fa-facebook';
-        if(src==='Instagram') icon='fa-instagram';
-        if(src==='YouTube') icon='fa-youtube';
-        sourceContainer.innerHTML += `<div class="source-row"><span class="source-name"><i class="fab ${icon}" style="width:20px;"></i> ${src}</span><div class="source-bar"><div class="source-fill" style="width:${percent}%"></div></div><span class="source-count">${count}</span></div>`;
-      });
-
-      const logs = [];
-      visits.slice(-5).forEach(v => logs.push({type:'Visit', ...v}));
-      clicks.slice(-5).forEach(c => logs.push({type:'Click', title: c.btnTitle, ...c}));
-      const logBox = document.getElementById('activityLog'); logBox.innerHTML = "";
-      if(logs.length === 0) logBox.innerHTML = '<div style="text-align:center;color:#555;">No recent activity.</div>';
-      logs.reverse().forEach(log => {
-        logBox.innerHTML += `<div class="log-item"><div class="log-left"><span class="log-title">${log.type==='Click'?log.title:'New Visitor'}</span><span class="log-sub">${log.browser||'Web'}</span></div><div class="log-right">${log.source||'Direct'}</div></div>`;
-      });
-
-      window.websitesData = data.websites || {};
-      window.socialsData = data.socials || {};
-      renderList('webList', window.websitesData, 'websites', 'editWeb');
-      renderList('socList', window.socialsData, 'socials', 'editSoc');
-
-      if(!dataLoaded) { dataLoaded = true; if(checkSession()) showApp(); else showLogin(); }
-    });
-
-    function renderList(elmId, data, path, editFn) {
-      const el = document.getElementById(elmId); el.innerHTML="";
-      Object.entries(data).forEach(([k,v])=>{
-        el.innerHTML+=`
-        <div class="list-item">
-            <div class="info" style="display:flex;flex-direction:column;"><b style="color:#eee;font-size:0.9rem;">${v.title}</b><span style="color:#666;font-size:0.7rem;">${v.link.substring(0,25)}...</span></div>
-            <div class="list-actions">
-                <button class="btn-icon" style="background:#222;color:var(--main);" onclick="copyText('${v.link}')"><i class="fas fa-copy"></i></button>
-                <button class="btn-icon" style="background:#222;color:#eee;" onclick="window.${editFn}('${k}')"><i class="fas fa-pen"></i></button>
-                <button class="btn-icon" style="background:#222;color:#f00;" onclick="del('${path}/${k}')"><i class="fas fa-trash"></i></button>
-            </div>
-        </div>`;
-      });
     }
 
-    window.resetAnalytics = () => {
-        if(confirm("Confirm: Delete ALL Analytics Data?")) {
-            remove(ref(db, 'analytics')).then(() => { alert("Data Cleared!"); window.location.reload(); });
+    // --- SLIDER ---
+    let sliderInt;
+    function startSlider() {
+      if(sliderInt) clearInterval(sliderInt);
+      const slides = document.querySelectorAll('.slide');
+      if(slides.length < 2) return;
+      let i = 0;
+      sliderInt = setInterval(() => { i = (i + 1) % slides.length; els.slider.style.transform = `translateX(-${i * 100}%)`; }, 3000);
+    }
+
+    const visitKey = 'site_visited_unique';
+    if(!localStorage.getItem(visitKey)) {
+        push(ref(db, 'analytics/visits'), { time: Date.now(), source: document.referrer || 'Direct' });
+        localStorage.setItem(visitKey, 'true');
+    }
+
+    // --- FETCH SETTINGS (PRIORITY 1) ---
+    onValue(ref(db, 'settings'), (snap) => {
+      const set = snap.val() || {};
+      
+      if(set.bgImage && set.bgImage.trim() !== "") document.body.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.7) 0%, #000 100%), url('${set.bgImage}')`;
+      else document.body.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.7) 0%, #000 100%), url('https://images.unsplash.com/photo-1534239143101-1b1c627395c5?q=80&w=1000&auto=format&fit=crop')`;
+      
+      els.userName.innerText = set.username || "User"; 
+      els.userBio.innerText = set.bio || "";
+      els.avatar.src = set.avatar || "https://via.placeholder.com/150"; 
+      els.footerText.innerText = set.footer || "SYSTEM SECURE";
+      document.title = set.siteName || "Interface"; 
+      els.fav.href = set.siteLogo || set.avatar;
+
+      // CSS Vars
+      const r = document.documentElement;
+      r.style.setProperty('--user-font', set.uiFont || "'Rajdhani', sans-serif");
+      r.style.setProperty('--btn-base', set.uiBtnColor || "#151515");
+      r.style.setProperty('--audio-color', set.uiAudioColor || "#00f2ff");
+      window.btnStyleClass = `style-${set.uiBtnStyle || 'default'}`;
+      
+      // Reveal site immediately after settings load
+      revealSite();
+    });
+
+    // --- FETCH BUTTONS (BACKGROUND LOAD) ---
+    onValue(ref(db, 'websites'), (s) => renderButtons(s.val(), els.webList));
+    onValue(ref(db, 'socials'), (s) => renderButtons(s.val(), els.socList));
+
+    // --- AUDIO LOGIC (FIXED FOR BROWSERS) ---
+    let allTracks = []; 
+    let audioInitialized = false; 
+
+    // Global Unlocker for Audio
+    function unlockAudio() {
+        if(allTracks.length > 0 && els.audio.paused) {
+            els.audio.play().then(() => {
+                updatePlayerUI(true);
+            }).catch(() => {
+                // Keep waiting for interaction
+            });
         }
-    };
+        // Remove listener once played successfully
+        if(!els.audio.paused) {
+             document.removeEventListener('click', unlockAudio);
+             document.removeEventListener('touchstart', unlockAudio);
+        }
+    }
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio);
 
-    window.saveProfile = () => update(ref(db, 'settings'), {
-      siteName: document.getElementById('siteName').value, 
-      siteLogo: document.getElementById('siteLogo').value,
-      bgImage: document.getElementById('userBgUrl').value,
-      username: document.getElementById('username').value,
-      avatar: document.getElementById('avatar').value, 
-      bio: document.getElementById('bio').value, 
-      footer: document.getElementById('footer').value
-    }).then(()=>toast("Saved"));
+    function initAudio(data) {
+        if(!data) { els.trackName.innerText = "No Audio Available"; els.trackStatus.innerText = "Offline"; }
+        else {
+            allTracks = Object.values(data);
+            if(allTracks.length > 0 && !audioInitialized) {
+                pickRandomTrack(true); 
+                audioInitialized = true;
+            }
+        }
+    }
 
-    window.saveAudio = () => set(ref(db, 'audio'), { name: document.getElementById('audioName').value, link: document.getElementById('audioLink').value }).then(()=>toast("Saved"));
-    window.addSlide = () => push(ref(db, 'slider'), document.getElementById('slideUrl').value).then(()=>{ document.getElementById('slideUrl').value=""; toast("Added"); });
+    function pickRandomTrack(autoPlay = false) {
+        if(allTracks.length === 0) return;
+        const randomTrack = allTracks[Math.floor(Math.random() * allTracks.length)];
+        
+        els.audio.src = randomTrack.link;
+        els.trackName.innerText = randomTrack.name;
+        
+        if(autoPlay) {
+            const playPromise = els.audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    updatePlayerUI(true);
+                }).catch(error => {
+                    console.log("Autoplay prevented. Waiting for interaction.");
+                    els.trackStatus.innerText = "TAP ANYWHERE TO PLAY";
+                    updatePlayerUI(false);
+                });
+            }
+        }
+    }
 
-    window.saveConfig = () => {
-      const p = document.getElementById('newAdminPass').value;
-      update(ref(db, 'adminConfig'), {
-        name: document.getElementById('adminName').value, 
-        logo: document.getElementById('adminLogo').value,
-        favicon: document.getElementById('adminFav').value, 
-        themeColor: document.getElementById('themeColor').value,
-        bgColor: document.getElementById('adminBgColor').value,
-        bgImage: document.getElementById('adminBgUrl').value,
-        password: p.length>0 ? p : realAdminPass
-      }).then(()=>{ toast("Config Saved"); toggleSettings(); });
-    };
+    // Pause on background
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden && !els.audio.paused) {
+            els.audio.pause();
+            updatePlayerUI(false);
+        }
+    });
 
-    window.editWeb = (k) => { const d=window.websitesData[k]; document.getElementById('webKey').value=k; document.getElementById('webTitle').value=d.title; document.getElementById('webIcon').value=d.icon; document.getElementById('webLink').value=d.link; document.getElementById('webPass').value=d.password||""; document.getElementById('btnAddWeb').style.display='none'; document.getElementById('btnUpdWeb').style.display='block'; };
-    window.addWeb = () => push(ref(db,'websites'), getWebVal()).then(()=>{ clrWeb(); toast("Added"); });
-    window.updWeb = () => { const k=document.getElementById('webKey').value; update(ref(db,`websites/${k}`), getWebVal()).then(()=>{ clrWeb(); toast("Updated"); }); };
-    function getWebVal(){ return {title:document.getElementById('webTitle').value, icon:document.getElementById('webIcon').value, link:document.getElementById('webLink').value, password:document.getElementById('webPass').value}; }
-    function clrWeb(){ document.getElementById('webTitle').value=""; document.getElementById('webIcon').value=""; document.getElementById('webLink').value=""; document.getElementById('webPass').value=""; document.getElementById('btnAddWeb').style.display='block'; document.getElementById('btnUpdWeb').style.display='none'; }
+    els.audio.addEventListener('ended', () => { pickRandomTrack(true); });
 
-    window.editSoc = (k) => { const d=window.socialsData[k]; document.getElementById('socKey').value=k; document.getElementById('socTitle').value=d.title; document.getElementById('socIcon').value=d.icon; document.getElementById('socLink').value=d.link; document.getElementById('socPass').value=d.password||""; document.getElementById('btnAddSoc').style.display='none'; document.getElementById('btnUpdSoc').style.display='block'; };
-    window.addSoc = () => push(ref(db,'socials'), getSocVal()).then(()=>{ clrSoc(); toast("Added"); });
-    window.updSoc = () => { const k=document.getElementById('socKey').value; update(ref(db,`socials/${k}`), getSocVal()).then(()=>{ clrSoc(); toast("Updated"); }); };
-    function getSocVal(){ return {title:document.getElementById('socTitle').value, icon:document.getElementById('socIcon').value, link:document.getElementById('socLink').value, password:document.getElementById('socPass').value}; }
-    function clrSoc(){ document.getElementById('socTitle').value=""; document.getElementById('socIcon').value=""; document.getElementById('socLink').value=""; document.getElementById('socPass').value=""; document.getElementById('btnAddSoc').style.display='block'; document.getElementById('btnUpdSoc').style.display='none'; }
+    onValue(ref(db, 'audio_list'), (snap) => {
+        if(!audioInitialized) { initAudio(snap.val()); } 
+        else { allTracks = Object.values(snap.val() || {}); }
+    });
 
-    window.del = (p) => { if(confirm("Delete?")) remove(ref(db,p)); };
+    els.playBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent global unlock trigger
+        if(!els.audio.src) { pickRandomTrack(true); return; }
+        if(els.audio.paused) { 
+            els.audio.play().then(() => updatePlayerUI(true));
+        } else { 
+            els.audio.pause(); 
+            updatePlayerUI(false); 
+        }
+    });
+
+    function updatePlayerUI(isPlaying) {
+        if(isPlaying) { 
+            els.playBtn.innerHTML = '<i class="fas fa-pause"></i>'; 
+            els.trackStatus.innerText = "Playing..."; 
+            els.equalizer.classList.add('playing'); 
+        } else { 
+            els.playBtn.innerHTML = '<i class="fas fa-play"></i>'; 
+            if(els.trackStatus.innerText !== "TAP ANYWHERE TO PLAY") els.trackStatus.innerText = "Paused";
+            els.equalizer.classList.remove('playing'); 
+        }
+    }
+
+    onValue(ref(db, 'slider'), (snap) => {
+      const data = snap.val(); els.slider.innerHTML = "";
+      if(data) { Object.values(data).forEach(url => { els.slider.innerHTML += `<div class="slide"><img src="${url}"></div>`; }); startSlider(); }
+    });
+
+    function renderButtons(dataObj, container) {
+      container.innerHTML = "";
+      if(!dataObj) return;
+      const currentStyle = window.btnStyleClass || 'style-default';
+      Object.values(dataObj).forEach(item => {
+        const isLocked = item.password && item.password.trim() !== "";
+        let leftContent = "";
+        if(item.icon && item.icon.includes('http')) leftContent = `<img src="${item.icon}" class="btn-logo-img">`;
+        else if (item.icon && (item.icon.includes('fa-') || item.icon.includes('fab'))) leftContent = `<i class="${item.icon} btn-icon-font"></i>`;
+        else { const domain = item.link && item.link.includes('http') ? new URL(item.link).hostname : ''; leftContent = `<img src="https://www.google.com/s2/favicons?domain=${domain}&sz=64" class="btn-logo-img">`; }
+        const rightIcon = isLocked ? '<i class="fas fa-lock btn-right locked"></i>' : '<i class="fas fa-share-alt btn-right"></i>';
+        const div = document.createElement('div');
+        div.className = `universal-btn ${currentStyle}`;
+        const originalHTML = `<div class="btn-left">${leftContent}</div><div class="btn-text">${item.title || 'Link'}</div>${rightIcon}`;
+        div.innerHTML = originalHTML;
+        div.onclick = (e) => {
+          if(e.target.tagName === 'INPUT') return;
+          const clickKey = `clicked_${item.link}`;
+          if (!sessionStorage.getItem(clickKey)) { push(ref(db, 'analytics/clicks'), { time: Date.now(), btnTitle: item.title, link: item.link, icon: item.icon }); sessionStorage.setItem(clickKey, 'true'); }
+          if(isLocked) {
+             if(div.querySelector('input')) return;
+             div.innerHTML = `<input type="password" class="inline-pass-input" placeholder="PASSWORD..." autocomplete="off">`;
+             const input = div.querySelector('input');
+             setTimeout(() => input.focus(), 50);
+             input.addEventListener('input', (ev) => {
+                if(ev.target.value === item.password) { input.style.color = "#00ff88"; input.blur(); setTimeout(() => { window.location.href = item.link; div.innerHTML = originalHTML; }, 300); }
+             });
+             input.addEventListener('blur', () => { if(input.value === "") setTimeout(() => { div.innerHTML = originalHTML; }, 200); });
+          } else { window.location.href = item.link; }
+        };
+        container.appendChild(div);
+      });
+    }
   </script>
 </body>
 </html>
