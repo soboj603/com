@@ -6,9 +6,11 @@
   <title>Loading...</title>
 
   <link rel="icon" type="image/png" id="dynFavicon" href=""/>
+  
+  <!-- FONT AWESOME -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
   
-  <!-- ALL FONTS LOADED -->
+  <!-- ALL FONTS -->
   <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Bangers&family=Bebas+Neue&family=Cinzel:wght@400;700&family=Creepster&family=Dancing+Script:wght@400;700&family=Lobster&family=Monoton&family=Orbitron:wght@400;700;900&family=Oswald:wght@400;700&family=Poppins:wght@300;400;600&family=Rajdhani:wght@400;600;700&family=Rock+Salt&family=Satisfy&display=swap" rel="stylesheet"/>
 
   <style>
@@ -16,6 +18,8 @@
         --user-font: 'Rajdhani', sans-serif;
         --btn-base: #151515; 
         --audio-color: #00f2ff;
+        /* FIXED AUDIO FONT (CREEPSTER) */
+        --fixed-player-font: 'Creepster', system-ui; 
     }
     
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
@@ -28,10 +32,13 @@
         touch-action: pan-y; overscroll-behavior-y: none;
     }
 
-    .username, .btn-text, .section-label, .loader-text { font-family: var(--user-font) !important; }
+    /* FORCE FONT */
+    .username, .loader-text, .section-label { font-family: var(--user-font) !important; }
+    .universal-btn, .btn-text, .inline-pass-input { font-family: var(--user-font) !important; }
+    
     footer, .footer-title, .footer-sub { font-family: 'Orbitron', sans-serif !important; }
 
-    /* --- FAST PRELOADER --- */
+    /* PRELOADER */
     #preloader { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
     .loader-ring { 
         width: 60px; height: 60px; 
@@ -45,21 +52,9 @@
     .main-container.show { opacity: 1; }
 
     .profile-section { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; }
-    
     .avatar-wrapper { position: relative; width: 100px; height: 100px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; border-radius: 50%; }
-    
-    .avatar-wrapper::before { 
-        content: ''; position: absolute; inset: 0; border-radius: 50%; z-index: 0; background: transparent; 
-        box-shadow: 0 0 15px #00f2ff; 
-        animation: breatheGlow 2.5s ease-in-out infinite alternate, hueRotate 10s linear infinite; 
-    }
-    
-    .ring { 
-        position: absolute; inset: -1px; border-radius: 50%; z-index: 1; 
-        background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #00f2ff 100%); 
-        animation: spin 1.5s linear infinite, hueRotate 10s linear infinite; 
-    }
-    
+    .avatar-wrapper::before { content: ''; position: absolute; inset: 0; border-radius: 50%; z-index: 0; background: transparent; box-shadow: 0 0 15px #00f2ff; animation: breatheGlow 2.5s ease-in-out infinite alternate, hueRotate 10s linear infinite; }
+    .ring { position: absolute; inset: -1px; border-radius: 50%; z-index: 1; background: conic-gradient(from 0deg, transparent 0%, transparent 40%, #00f2ff 100%); animation: spin 1.5s linear infinite, hueRotate 10s linear infinite; }
     .avatar-img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; z-index: 2; position: relative; border: 2px solid rgba(0,0,0,0.3); }
     
     @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -70,12 +65,30 @@
     @keyframes textShine { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
     .bio { font-size: 0.9rem; color: #aaa; max-width: 90%; line-height: 1.4; }
 
-    .audio-player { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 50px; padding: 6px 15px 6px 6px; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
-    .play-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: var(--audio-color); color: #000; font-size: 0.9rem; cursor: pointer; display: flex; justify-content: center; align-items: center; z-index: 2; transition:0.3s; }
+    /* --- AUDIO PLAYER --- */
+    .audio-player { 
+        background: rgba(255,255,255,0.05); 
+        border: 1px solid rgba(255,255,255,0.1); 
+        border-radius: 50px; 
+        padding: 6px 15px 6px 6px; 
+        margin-bottom: 25px; 
+        display: flex; 
+        align-items: center; 
+        gap: 10px; 
+        backdrop-filter: blur(10px); 
+        position: relative; 
+        overflow: hidden; 
+        font-family: var(--fixed-player-font) !important; 
+    }
+    .audio-player * { font-family: var(--fixed-player-font) !important; letter-spacing: 1px; }
+
+    .play-btn { width: 38px; height: 38px; border-radius: 50%; border: none; background: var(--audio-color); color: #000; cursor: pointer; display: flex; justify-content: center; align-items: center; z-index: 2; transition:0.3s; }
+    .play-btn svg { width: 14px; height: 14px; fill: #000; display: block; }
+
     .track-info { flex: 1; text-align: left; overflow: hidden; z-index: 2; position: relative; mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
-    .track-name { font-size: 0.85rem; font-weight: 700; color: #fff; display: inline-block; padding-left: 100%; animation: scrollText 10s linear infinite; }
+    .track-name { font-size: 1.1rem; font-weight: 400; color: #fff; display: inline-block; padding-left: 100%; animation: scrollText 10s linear infinite; }
     @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
-    .track-status { font-size: 0.65rem; color: var(--audio-color); text-transform: uppercase; margin-top: -2px; font-weight: bold; }
+    .track-status { font-size: 0.8rem; color: var(--audio-color); text-transform: uppercase; margin-top: -2px; }
 
     .equalizer { display: flex; gap: 4px; align-items: flex-end; height: 20px; margin-left: 5px; z-index: 2; opacity: 0.6; transition: 0.3s; }
     .equalizer.playing { opacity: 1; }
@@ -86,18 +99,22 @@
     @keyframes bounce { 0% { height: 4px; } 100% { height: 22px; } }
     @keyframes rainbowFlow { 0% { background-position: 0% 100%; filter: hue-rotate(0deg); } 100% { background-position: 0% 0%; filter: hue-rotate(360deg); } }
 
+    /* --- CINEMATIC SLIDER --- */
     .slider-box { width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.15); position: relative; pointer-events: none; }
-    .slider-track { display: flex; height: 100%; transition: transform 0.5s ease-in-out; }
-    .slide { min-width: 100%; height: 100%; }
+    .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; }
     .slide img { width: 100%; height: 100%; object-fit: cover; }
+    .slide.active { opacity: 1; z-index: 1; }
+    .slide.incoming { z-index: 2; animation: enterBlur 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    .slide.outgoing { z-index: 1; animation: exitFade 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+    @keyframes enterBlur { 0% { opacity: 0; transform: translateX(60%) scale(1.1); filter: blur(8px); } 100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0px); } }
+    @keyframes exitFade { 0% { opacity: 1; transform: translateX(0); filter: blur(0px); } 100% { opacity: 0; transform: translateX(-30%); filter: blur(4px); } }
 
     .section-label { font-size: 0.75rem; color: #555; letter-spacing: 3px; margin: 25px 0 10px; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
     .btn-container { display: flex; flex-direction: column; gap: 12px; width: 100%; margin-bottom: 10px; }
-    
     .universal-btn { position: relative; height: 55px; width: 100%; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; cursor: pointer; overflow: hidden; }
     .universal-btn:hover { transform: scale(1.02); }
 
-    /* STYLES */
+    /* BUTTON STYLES */
     .style-default { background: linear-gradient(90deg, var(--btn-base), #000); border: 1px solid #00f2ff; }
     .style-glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-left: 3px solid var(--btn-base); }
     .style-neon { background: transparent; border: 1px solid var(--btn-base); box-shadow: 0 0 5px var(--btn-base), inset 0 0 10px rgba(0,0,0,0.5); }
@@ -124,7 +141,6 @@
     .btn-text { font-size: 0.95rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; z-index: 2; pointer-events: none; }
     .btn-right { position: absolute; right: 15px; font-size: 1rem; color: #ccc; transition: 0.3s; }
     .btn-right.locked { color: #ff3333; text-shadow: 0 0 5px rgba(255, 51, 51, 0.5); }
-    
     .inline-pass-input { width: 100%; height: 100%; background: #000; border: none; color: var(--btn-base); text-align: center; font-size: 1.2rem; letter-spacing: 3px; outline: none; padding: 0 10px; animation: glow 1s infinite alternate; z-index: 10; }
 
     footer { margin-top: 50px; padding: 10px 20px 2px 20px; border-top: 1px solid #fff; background: linear-gradient(0deg, rgba(255,255,255,0.05) 0%, transparent 100%); text-align: center; }
@@ -148,7 +164,9 @@
 
     <!-- AUDIO PLAYER -->
     <div class="audio-player">
-      <button class="play-btn" id="playBtn"><i class="fas fa-play"></i></button>
+      <button class="play-btn" id="playBtn">
+        <svg id="playSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
       <div class="track-info">
         <div class="track-name-container"><div class="track-name" id="trackName">Loading Music...</div></div>
         <div class="track-status" id="trackStatus">Tap to Play</div>
@@ -157,7 +175,8 @@
     </div>
     <audio id="audio" preload="auto"></audio>
 
-    <div class="slider-box"><div class="slider-track" id="sliderTrack"></div></div>
+    <div class="slider-box" id="sliderBox"></div>
+
     <div class="section-label">Websites</div>
     <div class="btn-container" id="webList"></div>
     <div class="section-label">Social Media</div>
@@ -174,14 +193,14 @@
     import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCQd1KPVOpI0jBGqPKmwMVM6sNYLZFOtF4",
-      authDomain: "my-bio-59ebd.firebaseapp.com",
-      databaseURL: "https://my-bio-59ebd-default-rtdb.firebaseio.com",
-      projectId: "my-bio-59ebd",
-      storageBucket: "my-bio-59ebd.firebasestorage.app",
-      messagingSenderId: "1010447752701",
-      appId: "1:1010447752701:web:08e124623facf6275d8d94"
-    };
+      apiKey: "AIzaSyBjoMwaLWplKS3GcdsF_2KgKXh1mVK9eyE",
+  authDomain: "my-bio-a25f3.firebaseapp.com",
+  databaseURL: "https://my-bio-a25f3-default-rtdb.firebaseio.com",
+  projectId: "my-bio-a25f3",
+  storageBucket: "my-bio-a25f3.firebasestorage.app",
+  messagingSenderId: "250076954421",
+  appId: "1:250076954421:web:f6e53accbda1034b5d567c"
+};
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -192,14 +211,15 @@
       userBio: document.getElementById('userBio'), footerText: document.getElementById('footerText'),
       trackName: document.getElementById('trackName'), trackStatus: document.getElementById('trackStatus'),
       equalizer: document.getElementById('equalizer'), audio: document.getElementById('audio'),
-      playBtn: document.getElementById('playBtn'), slider: document.getElementById('sliderTrack'),
+      playBtn: document.getElementById('playBtn'), sliderBox: document.getElementById('sliderBox'),
       webList: document.getElementById('webList'), socList: document.getElementById('socList'), fav: document.getElementById('dynFavicon')
     };
 
-    // --- OPTIMIZED LOADING LOGIC ---
-    // We only wait for SETTINGS to show the site. Links/Audio will load in background.
-    let isSiteRevealed = false;
+    // --- LOADING LOGIC ---
+    let loaded = { settings: false, audio: false, web: false, soc: false, slide: false };
+    function checkAllLoaded() { if(loaded.settings && loaded.web && loaded.soc && loaded.audio && loaded.slide) revealSite(); }
 
+    let isSiteRevealed = false;
     function revealSite() {
         if(!isSiteRevealed) {
             isSiteRevealed = true;
@@ -211,16 +231,7 @@
             }, 500);
         }
     }
-
-    // --- SLIDER ---
-    let sliderInt;
-    function startSlider() {
-      if(sliderInt) clearInterval(sliderInt);
-      const slides = document.querySelectorAll('.slide');
-      if(slides.length < 2) return;
-      let i = 0;
-      sliderInt = setInterval(() => { i = (i + 1) % slides.length; els.slider.style.transform = `translateX(-${i * 100}%)`; }, 3000);
-    }
+    setTimeout(() => revealSite(), 4000);
 
     const visitKey = 'site_visited_unique';
     if(!localStorage.getItem(visitKey)) {
@@ -228,10 +239,9 @@
         localStorage.setItem(visitKey, 'true');
     }
 
-    // --- FETCH SETTINGS (PRIORITY 1) ---
+    // --- FETCH SETTINGS ---
     onValue(ref(db, 'settings'), (snap) => {
       const set = snap.val() || {};
-      
       if(set.bgImage && set.bgImage.trim() !== "") document.body.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.7) 0%, #000 100%), url('${set.bgImage}')`;
       else document.body.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.7) 0%, #000 100%), url('https://images.unsplash.com/photo-1534239143101-1b1c627395c5?q=80&w=1000&auto=format&fit=crop')`;
       
@@ -242,35 +252,34 @@
       document.title = set.siteName || "Interface"; 
       els.fav.href = set.siteLogo || set.avatar;
 
-      // CSS Vars
       const r = document.documentElement;
-      r.style.setProperty('--user-font', set.uiFont || "'Rajdhani', sans-serif");
+      r.style.setProperty('--user-font', set.uiFont || "'Rajdhani', sans-serif"); 
       r.style.setProperty('--btn-base', set.uiBtnColor || "#151515");
       r.style.setProperty('--audio-color', set.uiAudioColor || "#00f2ff");
-      window.btnStyleClass = `style-${set.uiBtnStyle || 'default'}`;
+      window.btnStyleClass = `style-${set.uiBtnStyle || 'neon'}`;
       
-      // Reveal site immediately after settings load
-      revealSite();
+      loaded.settings = true; checkAllLoaded();
     });
 
-    // --- FETCH BUTTONS (BACKGROUND LOAD) ---
-    onValue(ref(db, 'websites'), (s) => renderButtons(s.val(), els.webList));
-    onValue(ref(db, 'socials'), (s) => renderButtons(s.val(), els.socList));
+    onValue(ref(db, 'websites'), (s) => { renderButtons(s.val(), els.webList); loaded.web = true; checkAllLoaded(); });
+    onValue(ref(db, 'socials'), (s) => { renderButtons(s.val(), els.socList); loaded.soc = true; checkAllLoaded(); });
 
-    // --- AUDIO LOGIC (FIXED FOR BROWSERS) ---
+    // --- AUDIO LOGIC (MEMORY + NO REPEAT) ---
     let allTracks = []; 
     let audioInitialized = false; 
+    let wasPlayingBeforeHidden = false;
 
-    // Global Unlocker for Audio
-    function unlockAudio() {
-        if(allTracks.length > 0 && els.audio.paused) {
-            els.audio.play().then(() => {
-                updatePlayerUI(true);
-            }).catch(() => {
-                // Keep waiting for interaction
-            });
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+            if (!els.audio.paused) { wasPlayingBeforeHidden = true; els.audio.pause(); updatePlayerUI(false); } 
+            else { wasPlayingBeforeHidden = false; }
+        } else {
+            if (wasPlayingBeforeHidden) { els.audio.play().then(() => updatePlayerUI(true)).catch(() => {}); }
         }
-        // Remove listener once played successfully
+    });
+
+    function unlockAudio() {
+        if(allTracks.length > 0 && els.audio.paused) { els.audio.play().then(() => updatePlayerUI(true)).catch(() => {}); }
         if(!els.audio.paused) {
              document.removeEventListener('click', unlockAudio);
              document.removeEventListener('touchstart', unlockAudio);
@@ -283,81 +292,104 @@
         if(!data) { els.trackName.innerText = "No Audio Available"; els.trackStatus.innerText = "Offline"; }
         else {
             allTracks = Object.values(data);
-            if(allTracks.length > 0 && !audioInitialized) {
-                pickRandomTrack(true); 
-                audioInitialized = true;
-            }
+            if(allTracks.length > 0) { pickRandomTrack(true); audioInitialized = true; }
         }
     }
 
-    function pickRandomTrack(autoPlay = false) {
+    // FIXED: LOCAL STORAGE MEMORY TO PREVENT REPEATS ON RELOAD
+    function pickRandomTrack(attemptAutoPlay = false) {
         if(allTracks.length === 0) return;
-        const randomTrack = allTracks[Math.floor(Math.random() * allTracks.length)];
         
+        let candidates = allTracks;
+        // Check local storage for the last played track link
+        const lastPlayedLink = localStorage.getItem('lastPlayedTrack');
+
+        // If we have more than 1 track, remove the previously played one from candidates
+        if (allTracks.length > 1 && lastPlayedLink) {
+            candidates = allTracks.filter(t => t.link !== lastPlayedLink);
+            // Safety fallback if something went wrong
+            if (candidates.length === 0) candidates = allTracks;
+        }
+
+        // Pick random from valid candidates
+        const randomTrack = candidates[Math.floor(Math.random() * candidates.length)];
+        
+        // Save this track as the last played
+        localStorage.setItem('lastPlayedTrack', randomTrack.link);
+
         els.audio.src = randomTrack.link;
         els.trackName.innerText = randomTrack.name;
         
-        if(autoPlay) {
-            const playPromise = els.audio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    updatePlayerUI(true);
-                }).catch(error => {
-                    console.log("Autoplay prevented. Waiting for interaction.");
-                    els.trackStatus.innerText = "TAP ANYWHERE TO PLAY";
-                    updatePlayerUI(false);
-                });
-            }
+        if(attemptAutoPlay) {
+            els.audio.play().then(() => updatePlayerUI(true)).catch(() => {
+                els.trackStatus.innerText = "TAP ANYWHERE TO START";
+                updatePlayerUI(false);
+            });
         }
     }
 
-    // Pause on background
-    document.addEventListener("visibilitychange", () => {
-        if (document.hidden && !els.audio.paused) {
-            els.audio.pause();
-            updatePlayerUI(false);
-        }
-    });
-
     els.audio.addEventListener('ended', () => { pickRandomTrack(true); });
-
-    onValue(ref(db, 'audio_list'), (snap) => {
-        if(!audioInitialized) { initAudio(snap.val()); } 
-        else { allTracks = Object.values(snap.val() || {}); }
-    });
+    onValue(ref(db, 'audio_list'), (snap) => { initAudio(snap.val()); loaded.audio = true; checkAllLoaded(); });
 
     els.playBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent global unlock trigger
+        e.stopPropagation(); 
         if(!els.audio.src) { pickRandomTrack(true); return; }
-        if(els.audio.paused) { 
-            els.audio.play().then(() => updatePlayerUI(true));
-        } else { 
-            els.audio.pause(); 
-            updatePlayerUI(false); 
-        }
+        if(els.audio.paused) { els.audio.play().then(() => updatePlayerUI(true)); } else { els.audio.pause(); updatePlayerUI(false); }
     });
 
     function updatePlayerUI(isPlaying) {
         if(isPlaying) { 
-            els.playBtn.innerHTML = '<i class="fas fa-pause"></i>'; 
+            els.playBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>'; 
             els.trackStatus.innerText = "Playing..."; 
             els.equalizer.classList.add('playing'); 
         } else { 
-            els.playBtn.innerHTML = '<i class="fas fa-play"></i>'; 
-            if(els.trackStatus.innerText !== "TAP ANYWHERE TO PLAY") els.trackStatus.innerText = "Paused";
+            els.playBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M8 5v14l11-7z"/></svg>'; 
+            if(els.trackStatus.innerText !== "TAP ANYWHERE TO START") els.trackStatus.innerText = "Paused";
             els.equalizer.classList.remove('playing'); 
         }
     }
 
+    // --- SLIDER LOGIC ---
+    let sliderInterval;
+    let currentSlide = 0;
+    
+    function startSlider() {
+        const slides = els.sliderBox.getElementsByClassName('slide');
+        if (slides.length <= 1) {
+            if(slides.length === 1) slides[0].classList.add('active'); 
+            return;
+        }
+        slides[0].classList.add('active');
+        if (sliderInterval) clearInterval(sliderInterval);
+        sliderInterval = setInterval(() => {
+            const nextSlide = (currentSlide + 1) % slides.length;
+            for(let s of slides) {
+                s.classList.remove('incoming', 'outgoing');
+                if(s !== slides[currentSlide]) s.classList.remove('active');
+            }
+            slides[currentSlide].classList.add('outgoing'); 
+            slides[nextSlide].classList.add('active', 'incoming'); 
+            setTimeout(() => {
+                slides[currentSlide].classList.remove('active', 'outgoing');
+                slides[nextSlide].classList.remove('incoming');
+                currentSlide = nextSlide;
+            }, 1500); 
+        }, 4000); 
+    }
+
     onValue(ref(db, 'slider'), (snap) => {
-      const data = snap.val(); els.slider.innerHTML = "";
-      if(data) { Object.values(data).forEach(url => { els.slider.innerHTML += `<div class="slide"><img src="${url}"></div>`; }); startSlider(); }
+      const data = snap.val(); els.sliderBox.innerHTML = "";
+      if(data) { 
+          Object.values(data).forEach(url => { els.sliderBox.innerHTML += `<div class="slide"><img src="${url}"></div>`; }); 
+          setTimeout(startSlider, 100); 
+      }
+      loaded.slide = true; checkAllLoaded();
     });
 
     function renderButtons(dataObj, container) {
       container.innerHTML = "";
       if(!dataObj) return;
-      const currentStyle = window.btnStyleClass || 'style-default';
+      const currentStyle = window.btnStyleClass || 'style-neon';
       Object.values(dataObj).forEach(item => {
         const isLocked = item.password && item.password.trim() !== "";
         let leftContent = "";
