@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #050608; 
+            --card: #0d1117; 
+            --accent: #00f2ff; 
+            --red: #ff2d55; 
+            --green: #00ff95; 
+            --border: rgba(0, 242, 255, 0.15); 
+            --gold: #ffc400; 
+            --accent-glow: rgba(0, 242, 255, 0.25);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        html, body { 
+            background: var(--bg); 
+            color: #e6edf3; 
+            height: 100dvh; 
+            width: 100%;
+            overflow: hidden; 
+            position: fixed;
+        }
+
+        body { display: flex; flex-direction: column; }
+
+        /* Login Screen */
+        #login-overlay {
+            position: fixed; inset: 0; background: var(--bg); z-index: 10000;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .login-box {
+            background: var(--card); border: 1px solid var(--accent); padding: 30px;
+            border-radius: 24px; width: 100%; max-width: 350px; text-align: center;
+            box-shadow: 0 0 40px var(--accent-glow);
+        }
+
+        header { 
+            padding: 15px 10px; text-align: center; background: var(--card); 
+            border-bottom: 1px solid var(--border); position: relative; z-index: 1001; flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .header-title { font-family: 'Orbitron'; font-size: 1.1rem; color: var(--accent); font-weight: 900; text-shadow: 0 0 10px var(--accent-glow); }
+        
+        .content { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 15px; 
+            padding-bottom: 150px; 
+            -webkit-overflow-scrolling: touch;
+            min-height: 0;
+        }
+
+        .tab-section { display: none; width: 100%; max-width: 600px; margin: 0 auto; }
+        .tab-section.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+        .form-card { 
+            background: var(--card); padding: 22px; border-radius: 20px; 
+            border: 1px solid var(--border); margin-bottom: 25px; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .card-label { 
+            font-size: 0.75rem; color: var(--accent); font-weight: 700; 
+            text-transform: uppercase; margin-bottom: 18px; display: block; 
+            border-left: 4px solid var(--accent); padding-left: 12px;
+        }
+        
+        .input-group { position: relative; margin-bottom: 15px; } 
+        .input-group i { position: absolute; left: 15px; top: 14px; color: var(--accent); opacity: 0.8; }
+        input, textarea { 
+            width: 100%; padding: 13px 13px 13px 48px; background: #000; 
+            border: 1px solid var(--border); color: #fff; border-radius: 14px; 
+            outline: none; font-size: 0.85rem; transition: 0.3s;
+        }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+        
+        .action-btn { 
+            width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #00a2ff); 
+            color: #000; border: none; border-radius: 14px; font-weight: 900; 
+            cursor: pointer; text-transform: uppercase; font-family: 'Orbitron'; font-size: 0.8rem;
+        }
+
+        .visitor-hero { 
+            width: 100%; background: var(--card); padding: 30px 15px; border-radius: 24px; 
+            text-align: center; border: 1px solid var(--accent); margin-bottom: 25px;
+        }
+        .visitor-hero h2 { font-size: 3rem; color: var(--accent); font-family: 'Orbitron'; }
+        
+        .list-item { 
+            display: flex; align-items: center; background: var(--card); padding: 14px; 
+            border-radius: 16px; margin-top: 12px; border: 1px solid var(--border); 
+        }
+        .list-item img { width: 45px; height: 45px; border-radius: 10px; margin-right: 15px; object-fit: cover; border: 1px solid #1a1a1a; transition: 0.2s; }
+        .list-item b { flex: 1; font-size: 0.85rem; }
+        
+        .item-actions { display: flex; gap: 15px; align-items: center; }
+        .item-actions i { font-size: 1.1rem; cursor: pointer; color: var(--accent); }
+        .amt-badge { color: var(--green); font-weight: 900; margin-right: 12px; font-size: 0.85rem; }
+
+        .pending-box { background: var(--card); padding: 18px; border-radius: 20px; border-left: 5px solid var(--gold); margin-bottom: 18px; border: 1px solid var(--border); }
+        .claim-head { font-family: 'Orbitron'; font-size: 0.95rem; color: var(--accent); margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        .sub-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; background: #000; padding: 6px; border-radius: 15px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .sub-nav button { padding: 10px; border: none; background: transparent; color: #555; font-weight: 700; border-radius: 10px; cursor: pointer; font-size: 0.75rem; }
+        .sub-nav button.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-glow); }
+
+        .bottom-bar { 
+            position: fixed; bottom: 0; width: 100%; background: var(--card); 
+            display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--border); 
+            z-index: 1000; flex-shrink: 0; padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            backdrop-filter: blur(10px);
+        }
+        .nav-item { text-align: center; color: #444; font-size: 0.65rem; cursor: pointer; flex: 1; transition: 0.3s; }
+        .nav-item i { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+        .nav-item.active { color: var(--accent); }
+
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #000; padding: 12px 30px; border-radius: 50px; font-weight: 800; transition: 0.5s; z-index: 11000; }
+        #toast.show { top: 85px; }
+    </style>
+</head>
+<body>
+
+<div id="login-overlay">
+    <div class="login-box">
+        <h2 style="font-family:'Orbitron'; color:var(--accent); margin-bottom:25px; font-size: 1.3rem;">ADMIN SECURE</h2>
+        <div class="input-group">
+            <i class="fas fa-fingerprint"></i>
+            <input type="password" id="pass-input" placeholder="Passkey">
+        </div>
+        <button class="action-btn" onclick="checkLogin()">IDENTIFY ADMIN</button>
+    </div>
+</div>
+
+<div id="toast">Saved!</div>
+<header><div class="header-title">×͜× SOBOJ ADMIN ×͜×</div></header>
+
+<div class="content" id="main-content">
+    <!-- DASHBOARD -->
+    <div id="tab-dash" class="tab-section active">
+        <div class="visitor-hero"><h2 id="total-v">0</h2><p style="font-size: 0.75rem; color: #666;">Unique Visitors</p></div>
+        <span class="card-label">Digital Analytics</span>
+        <div id="click-stats-list"></div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div id="tab-btns" class="tab-section">
+        <div class="form-card">
+            <span class="card-label" id="btn-form-title">Website Configuration</span>
+            <input type="hidden" id="edit-key-btn" value="">
+            <div class="input-group"><i class="fas fa-tag"></i><input type="text" id="lName" placeholder="Site Name"></div>
+            <div class="input-group"><i class="fas fa-link"></i><input type="text" id="lUrl" placeholder="User URL"></div>
+            <div class="input-group"><i class="fas fa-user-shield"></i><input type="text" id="lAdminUrl" placeholder="Admin URL"></div>
+            <div class="input-group"><i class="fas fa-image"></i><input type="text" id="lLogo" placeholder="Custom Logo URL"></div>
+            <button class="action-btn" onclick="saveLink()">Apply Button</button>
+        </div>
+        <div id="list-links"></div>
+    </div>
+
+    <!-- ASSETS -->
+    <div id="tab-assets" class="tab-section">
+        <div class="sub-nav"><button class="active" onclick="openSub('sub-all', this)">Overview</button><button onclick="openSub('sub-img', this)">Sliders</button><button onclick="openSub('sub-txt', this)">Messages</button></div>
+        <div id="sub-all" class="sub-content"></div>
+        <div id="sub-img" class="sub-content" style="display:none;">
+            <div class="form-card">
+                <span class="card-label">Slider Engine</span>
+                <input type="hidden" id="edit-key-img" value="">
+                <div class="input-group"><i class="fas fa-camera"></i><input type="text" id="sUrlInput" placeholder="Image URL"></div>
+                <button class="action-btn" id="btn-save-img" onclick="saveAsset('sliders', 'sUrlInput', 'edit-key-img')">Add Slider</button>
+            </div>
+            <div id="list-sliders"></div>
+        </div>
+        <div id="sub-txt" class="sub-content" style="display:none;">
+            <div class="form-card">
+                <span class="card-label">Marquee System</span>
+                <input type="hidden" id="edit-key-txt" value="">
+                <div class="input-group"><i class="fas fa-comment-dots"></i><input type="text" id="mTxtInput" placeholder="Scrolling text..."></div>
+                <button class="action-btn" id="btn-save-txt" onclick="saveAsset('marquees', 'mTxtInput', 'edit-key-txt')">Add Text</button>
+            </div>
+            <div id="list-marquees"></div>
+        </div>
+    </div>
+
+    <!-- CLAIMS -->
+    <div id="tab-claims" class="tab-section">
+        <div class="form-card">
+            <span class="card-label">Demo Payout Generator</span>
+            <div class="input-group"><i class="fas fa-user"></i><input type="text" id="pName" placeholder="Username"></div>
+            <div class="input-group"><i class="fas fa-users"></i><input type="number" id="pRefs" placeholder="Successful Referrals"></div>
+            <div class="input-group"><i class="fas fa-money-check-alt"></i><input type="text" id="pAmt" placeholder="Amount (100)"></div>
+            <button class="action-btn" onclick="addDemoPayout()">Add to Live Slider</button>
+        </div>
+        <span class="card-label">Pending Verifications</span>
+        <div id="list-claims"></div>
+        <span class="card-label" style="margin-top:20px;">History (Live)</span>
+        <div id="list-payouts"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="tab-set" class="tab-section">
+        <div class="form-card">
+            <span class="card-label">App Configuration</span>
+            <div class="input-group"><i class="fas fa-image"></i><input type="text" id="headLogo" placeholder="Logo URL"></div>
+            <div class="input-group"><i class="fas fa-coins"></i><input type="number" id="bonusRate" placeholder="Bonus per Invite"></div>
+            <div class="input-group"><i class="fas fa-window-maximize"></i><input type="text" id="siteT" placeholder="App Tab Name"></div>
+            <div class="input-group"><i class="fas fa-heading"></i><input type="text" id="headN" placeholder="Header Display Name"></div>
+            <div class="input-group"><i class="fas fa-star"></i><input type="text" id="promoT" placeholder="Promotion Title"></div>
+            <div class="input-group"><i class="fas fa-quote-left"></i><textarea id="promoM" placeholder="Promotion Message"></textarea></div>
+            <div class="input-group"><i class="fas fa-copyright"></i><input type="text" id="footT" placeholder="Footer Branding"></div>
+            
+            <!-- Security at the Bottom -->
+            <span class="card-label" style="margin-top: 30px;">Security Access</span>
+            <div class="input-group"><i class="fas fa-key"></i><input type="text" id="adminPass" placeholder="Update Access Pass"></div>
+            
+            <button class="action-btn" onclick="saveSettings()">Save Configuration</button>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-bar">
+    <div class="nav-item active" id="nav-dash" onclick="openTab('tab-dash', this)"><i class="fas fa-chart-line"></i>Dash</div>
+    <div class="nav-item" onclick="openTab('tab-btns', this)"><i class="fas fa-th-large"></i>Btns</div>
+    <div class="nav-item" onclick="openTab('tab-assets', this)"><i class="fas fa-images"></i>Assets</div>
+    <div class="nav-item" onclick="openTab('tab-claims', this)"><i class="fas fa-clipboard-check"></i>Claims</div>
+    <div class="nav-item" onclick="openTab('tab-set', this)"><i class="fas fa-cog"></i>Set</div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getDatabase, ref, onValue, set, update, push, remove } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBdw7g_3soJcdkBeNBzPyAlm8Y534U2ye4",
+        authDomain: "project-653629965014063927.firebaseapp.com",
+        databaseURL: "https://project-653629965014063927-default-rtdb.firebaseio.com",
+        projectId: "project-653629965014063927",
+        storageBucket: "project-653629965014063927.firebasestorage.app",
+        messagingSenderId: "46960139897",
+        appId: "1:46960139897:web:0905b72e848647b665bea8"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let correctPass = "2";
+    let currentActiveTab = 'tab-dash';
+
+    // --- Back Button Management ---
+    window.openTab = (id, el) => {
+        if(id === currentActiveTab) return;
+        if(id !== 'tab-dash') history.pushState({ tab: id }, "");
+        switchTabUI(id, el);
+    };
+
+    function switchTabUI(id, el) {
+        currentActiveTab = id;
+        document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(el) el.classList.add('active');
+        else {
+            const navItems = document.querySelectorAll('.nav-item');
+            const map = { 'tab-dash': 0, 'tab-btns': 1, 'tab-assets': 2, 'tab-claims': 3, 'tab-set': 4 };
+            navItems[map[id]].classList.add('active');
+        }
+        document.getElementById('main-content').scrollTop = 0;
+    }
+
+    window.onpopstate = (e) => { if (currentActiveTab !== 'tab-dash') switchTabUI('tab-dash'); };
+
+    // --- Auth Logic ---
+    window.checkLogin = () => {
+        const input = document.getElementById('pass-input').value;
+        if(input === correctPass) {
+            document.getElementById('login-overlay').style.display = 'none';
+            localStorage.setItem('admin_login_timestamp', Date.now());
+        } else alert("Invalid Passkey!");
+    };
+
+    const lastLogin = localStorage.getItem('admin_login_timestamp');
+    if(lastLogin && (Date.now() - lastLogin < 10 * 60 * 1000)) document.getElementById('login-overlay').style.display = 'none';
+
+    const getLogo = (l) => {
+        if(l.logo && l.logo.trim() !== "") return l.logo;
+        try { return `https://www.google.com/s2/favicons?domain=${new URL(l.url).hostname}&sz=128`; } 
+        catch(e) { return 'https://cdn-icons-png.flaticon.com/512/1006/1006771.png'; }
+    };
+
+    window.showToast = (m) => { const t = document.getElementById('toast'); t.innerText = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); };
+    window.openSub = (id, el) => { document.querySelectorAll('.sub-content').forEach(c => c.style.display = 'none'); document.querySelectorAll('.sub-nav button').forEach(b => b.classList.remove('active')); document.getElementById(id).style.display = 'block'; el.classList.add('active'); };
+
+    onValue(ref(db, '/'), (snap) => {
+        const data = snap.val() || {};
+        const s = data.settings || {};
+        const links = data.links || {};
+        const analytics = data.analytics || {};
+
+        if(s.adminPass) correctPass = s.adminPass;
+
+        document.getElementById('total-v').innerText = analytics.unique_ips ? Object.keys(analytics.unique_ips).length : 0;
+        const clicks = analytics.unique_clicks || {};
+        
+        // --- Dashboard Update (Direct Redirect on Image Click, No Toasts) ---
+        document.getElementById('click-stats-list').innerHTML = Object.entries(links).map(([k, l]) => {
+            const count = clicks[l.name] ? Object.keys(clicks[l.name]).length : 0;
+            const targetUrl = l.adminUrl && l.adminUrl.trim() !== "" ? l.adminUrl : l.url;
+            return `<div class="list-item">
+                <img src="${getLogo(l)}" onclick="window.location.href='${targetUrl}'" style="cursor:pointer">
+                <b>${l.name}</b>
+                <span style="background:var(--accent); color:#000; padding:4px 12px; border-radius:20px; font-weight:900; font-size: 0.7rem;">${count}</span>
+            </div>`;
+        }).join('');
+
+        document.getElementById('list-links').innerHTML = Object.entries(links).map(([k, l]) => `
+            <div class="list-item"><img src="${getLogo(l)}"><b>${l.name}</b>
+                <div class="item-actions">
+                    <i class="fas fa-edit" style="color:var(--green);" onclick="editBtn('${k}','${l.name}','${l.url}','${l.adminUrl||''}','${l.logo||''}')"></i>
+                    <i class="fas fa-trash" style="color:var(--red);" onclick="deleteNode('links/${k}')"></i>
+                </div>
+            </div>`).join('');
+
+        const sliders = s.sliders || {};
+        const marquees = s.marquees || {};
+        let allHtml = "";
+        Object.values(sliders).forEach(u => allHtml += `<div class="list-item"><img src="${u}"><b>Slider</b></div>`);
+        Object.values(marquees).forEach(t => allHtml += `<div class="list-item"><b>${t}</b></div>`);
+        document.getElementById('sub-all').innerHTML = allHtml || "No Assets Found";
+
+        document.getElementById('list-sliders').innerHTML = Object.entries(sliders).map(([k, u]) => `<div class="list-item"><img src="${u}"><b>Slider</b><div class="item-actions"><i class="fas fa-edit" style="color:var(--green);" onclick="editAsset('sliders','${k}','${u}')"></i><i class="fas fa-trash" style="color:var(--red);" onclick="deleteNode('settings/sliders/${k}')"></i></div></div>`).join('');
+        document.getElementById('list-marquees').innerHTML = Object.entries(marquees).map(([k, t]) => `<div class="list-item"><b>${t}</b><div class="item-actions"><i class="fas fa-edit" style="color:var(--green);" onclick="editAsset('marquees','${k}','${t}')"></i><i class="fas fa-trash" style="color:var(--red);" onclick="deleteNode('settings/marquees/${k}')"></i></div></div>`).join('');
+
+        document.getElementById('list-claims').innerHTML = Object.entries(data.claims || {}).map(([k, c]) => `
+            <div class="pending-box">
+                <div class="claim-head">${c.website}</div>
+                <div style="font-size:0.8rem; margin-bottom:10px; color:#aaa;">
+                    <b>Username/ID:</b> ${c.username || 'N/A'}<br>
+                    <b>Method:</b> ${c.method} | <b>Num:</b> ${c.phone}
+                </div>
+                ${c.referrals ? `<div style="background:#000; padding:10px; border-radius:10px; margin-bottom:10px; border:1px solid var(--border); font-size:0.7rem; color:var(--accent);">${c.referrals.map((r,i)=>`<div>Ref ${i+1}: ${r.name}</div>`).join('')}</div>` : ''}
+                <div style="display:flex; justify-content: space-between; align-items: center;">
+                    <b style="color:var(--gold); font-size: 0.85rem;">Amt: ${c.amt}</b>
+                    <div style="display:flex; gap:10px;">
+                        <button class="action-btn" style="background:var(--green); width:80px; height:35px; font-size:9px; margin:0;" onclick="approve('${k}', '${c.username}', '${c.refs || 0}', '${c.amt}')">Approve</button>
+                        <button class="action-btn" style="background:var(--red); width:80px; height:35px; font-size:9px; margin:0;" onclick="deleteNode('claims/${k}')">Reject</button>
+                    </div>
+                </div>
+            </div>`).join('');
+
+        document.getElementById('list-payouts').innerHTML = Object.entries(data.payouts || {}).map(([k, p]) => `
+            <div class="list-item">
+                <div style="flex:1;"><b>${p.name}</b><br><small style="color:#666;">${p.refs || 0} Successful Refs</small></div>
+                <div class="item-actions">
+                    <span class="amt-badge">${p.amt.includes('৳') ? p.amt : '৳'+p.amt}</span>
+                    <i class="fas fa-trash" style="color:var(--red);" onclick="deleteNode('payouts/${k}')"></i>
+                </div>
+            </div>`).join('');
+
+        document.getElementById('adminPass').value = s.adminPass || "2";
+        document.getElementById('headLogo').value = s.headerLogo || "";
+        document.getElementById('bonusRate').value = s.bonusRate || "";
+        document.getElementById('siteT').value = s.siteTitle || "";
+        document.getElementById('headN').value = s.headerName || "";
+        document.getElementById('promoT').value = s.promoTitle || "";
+        document.getElementById('promoM').value = s.promoMessage || "";
+        document.getElementById('footT').value = s.footerText || "";
+    });
+
+    window.saveLink = () => {
+        const key = document.getElementById('edit-key-btn').value;
+        const d = { name: lName.value, url: lUrl.value, adminUrl: lAdminUrl.value, logo: lLogo.value };
+        if(!d.name || !d.url) return alert("Fill Site Name and URL!");
+        if(key) set(ref(db, 'links/'+key), d); else push(ref(db, 'links'), d);
+        lName.value=""; lUrl.value=""; lAdminUrl.value=""; lLogo.value=""; document.getElementById('edit-key-btn').value="";
+        document.getElementById('btn-form-title').innerText = "Website Configuration";
+        showToast("Configuration Saved!");
+    };
+
+    window.editBtn = (k, n, u, a, l) => {
+        lName.value=n; lUrl.value=u; lAdminUrl.value=a; lLogo.value=l; document.getElementById('edit-key-btn').value=k;
+        document.getElementById('btn-form-title').innerText = "Update Configuration";
+        document.getElementById('main-content').scrollTop = 0;
+    };
+
+    window.editAsset = (type, k, v) => {
+        if(type === 'sliders') { document.getElementById('sUrlInput').value = v; document.getElementById('edit-key-img').value = k; } 
+        else { document.getElementById('mTxtInput').value = v; document.getElementById('edit-key-txt').value = k; }
+        document.getElementById('main-content').scrollTop = 0;
+    };
+
+    window.saveAsset = (type, inputId, keyId) => {
+        const val = document.getElementById(inputId).value;
+        const key = document.getElementById(keyId).value;
+        if(!val) return alert("Input field is empty!");
+        if(key) set(ref(db, `settings/${type}/${key}`), val);
+        else push(ref(db, `settings/${type}`), val);
+        document.getElementById(inputId).value = ""; document.getElementById(keyId).value = "";
+        showToast("Asset Saved!");
+    };
+
+    window.saveSettings = () => {
+        update(ref(db, 'settings'), { 
+            adminPass: document.getElementById('adminPass').value,
+            headerLogo: document.getElementById('headLogo').value,
+            bonusRate: document.getElementById('bonusRate').value,
+            siteTitle: document.getElementById('siteT').value, 
+            headerName: document.getElementById('headN').value, 
+            promoTitle: document.getElementById('promoT').value, 
+            promoMessage: document.getElementById('promoM').value, 
+            footerText: document.getElementById('footT').value 
+        }).then(() => showToast("App Settings Applied!"));
+    };
+
+    window.approve = (k, n, r, a) => {
+        const finalAmt = a.includes('৳') ? a : '৳' + a;
+        push(ref(db, 'payouts'), { name: n, refs: r, amt: finalAmt, time: Date.now() });
+        remove(ref(db, `claims/${k}`));
+        showToast("Payout Approved!");
+    };
+
+    window.deleteNode = (path) => { if(confirm("Confirm deletion?")) remove(ref(db, path)).then(() => showToast("Deleted!")); };
+    
+    window.addDemoPayout = () => {
+        const name = document.getElementById('pName').value;
+        const refs = document.getElementById('pRefs').value;
+        const amt = document.getElementById('pAmt').value;
+        if(!name || !amt) return alert("Required: Name & Amount");
+        const finalAmt = amt.includes('৳') ? amt : '৳' + amt;
+        push(ref(db, 'payouts'), { name, refs: refs || 0, amt: finalAmt, time: Date.now() });
+        document.getElementById('pName').value=""; document.getElementById('pRefs').value=""; document.getElementById('pAmt').value="";
+        showToast("Demo Payout Added!");
+    };
+</script>
+</body>
+</html>
