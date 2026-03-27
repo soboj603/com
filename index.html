@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SOBOJ - Official Panel</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+    <style>
+        :root { --bg: #0a0b10; --card: #161b22; --hb: #00f2ff; --accent: #7000ff; --gold: #ffd700; --success: #00ff88; --red: #ff3131; }
+        
+        /* সুরক্ষা: কপি, মার্ক ও জুম বন্ধ */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+        input, select { user-select: text !important; -webkit-user-select: text !important; }
+
+        body { background-color: #000; display: flex; justify-content: center; min-height: 100vh; color: #e6edf3; overflow-x: hidden; }
+
+        .app-container {
+            width: 100%; max-width: 450px; background: var(--bg);
+            min-height: 100vh; position: relative; display: flex; flex-direction: column;
+            box-shadow: 0 0 60px rgba(0,0,0,1); overflow-x: hidden;
+        }
+
+        /* লোডার */
+        #main-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0b10; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.6s; }
+        .loader-ring { width: 60px; height: 60px; border: 4px solid rgba(0, 242, 255, 0.1); border-top: 4px solid var(--hb); border-radius: 50%; animation: spin 1s linear infinite; }
+        .loading-text { margin-top: 20px; font-family: 'Orbitron'; font-size: 0.8rem; color: var(--hb); letter-spacing: 5px; animation: blink 1.5s infinite; }
+
+        /* কনফার্মেশন মডাল */
+        #confirm-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 20000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: #161b22; border: 2px solid var(--hb); border-radius: 20px; padding: 25px; text-align: center; max-width: 340px; box-shadow: 0 0 30px rgba(0,242,255,0.4); }
+        .modal-box h3 { color: var(--gold); font-family: 'Orbitron'; margin-bottom: 10px; font-size: 1rem; }
+        .modal-box p { font-size: 0.75rem; line-height: 1.5; color: #ccc; margin-bottom: 15px; }
+        .modal-btns { display: flex; gap: 10px; }
+        .m-btn { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; font-family: 'Orbitron'; font-size: 0.8rem; }
+        .btn-yes { background: var(--hb); color: #000; }
+        .btn-no { background: #333; color: #fff; }
+
+        /* টোস্ট নোটিফিকেশন */
+        #app-toast { position: absolute; top: -100px; left: 50%; transform: translateX(-50%); background: var(--hb); color: #000; padding: 8px 25px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; transition: 0.5s; z-index: 10001; opacity: 0; pointer-events: none; }
+        #app-toast.show { top: 80px; opacity: 1; }
+
+        header { padding: 10px 15px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0, 242, 255, 0.2); background: var(--bg); position: sticky; top: 0; z-index: 1000; height: 65px; }
+        .brand-name { font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 900; color: var(--hb); text-transform: uppercase; }
+
+        /* নোটিফিকেশন উইন্ডো */
+        #notif-window { position: absolute; top: 75px; left: 50%; transform: translateX(-50%); width: 280px; background: #161b22; border: 1px solid var(--hb); border-radius: 15px; display: none; z-index: 5000; padding: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.9); animation: pop 0.3s ease-out; }
+        @keyframes pop { from { transform: translateX(-50%) scale(0.9); opacity: 0; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
+        .notif-item { background: #0d1117; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--gold); font-size: 0.65rem; }
+        .notif-item.success { border-left-color: var(--success); }
+
+        /* স্লাইডার */
+        .swiper { width: 100%; height: 180px; background: #000; }
+        .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* মারকুই */
+        .marquee-box { background: #0d1117; padding: 12px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
+        .marquee-text { white-space: nowrap; animation: scrollText 30s linear infinite; font-size: 0.85rem; color: var(--hb); font-weight: 600; padding-left: 100%; }
+
+        /* বাটন গ্রিড */
+        .grid-links { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; }
+        .link-card { background: var(--card); border-radius: 12px; padding: 12px 5px; text-align: center; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
+        .link-card:active { background: rgba(0,242,255,0.1); transform: scale(0.95); }
+        .link-card img { width: 38px; height: 38px; border-radius: 8px; margin-bottom: 5px; object-fit: cover; background: #000; }
+        .link-card span { font-size: 0.55rem; color: #fff; font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .separator-line { height: 2px; width: 90%; margin: 7px auto 15px auto; background: linear-gradient(to right, transparent, var(--hb), transparent); box-shadow: 0 0 80px var(--hb); }
+
+        /* প্রোমো বক্স */
+        .promo-container { margin: 10px 15px; padding: 1.5px; border-radius: 12px; background: linear-gradient(90deg, var(--hb), var(--accent), var(--hb)); background-size: 200%; animation: glow 4s linear infinite; }
+        .promo-box { background: #0d1117; padding: 12px; border-radius: 10px; text-align: center; }
+        .promo-box h2 { font-size: 0.9rem; font-family: 'Orbitron'; color: #fff; margin-bottom: 4px; }
+        .promo-box p { font-size: 0.75rem; color: #aaa; }
+
+        /* ওয়েবসাইট লিঙ্ক ও শেয়ার আইকন */
+        .ref-item { display: flex; align-items: center; background: rgba(255,255,255,0.04); padding: 10px 12px; border-radius: 12px; margin: 0 15px 10px 15px; border-left: 4px solid var(--hb); }
+        .site-logo-mini { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; border: 1px solid #333; }
+        .site-name-center { flex: 1; text-align: center; font-size: 0.85rem; font-weight: 600; color: #fff; }
+        .action-btns { display: flex; gap: 8px; }
+        .action-btn { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: #222; color: var(--hb); border: 1px solid #333; cursor: pointer; }
+
+        /* পেমেন্ট গ্রিড */
+        .pay-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; margin-top: 5px; }
+        .pay-item { background: #0d1117; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid #333; cursor: pointer; transition: 0.2s; }
+        .pay-item.active { border-color: var(--hb); background: rgba(0, 242, 255, 0.1); }
+        .pay-item img { width: 30px; margin-bottom: 5px; }
+        .pay-item span { font-size: 0.6rem; display: block; color: #fff; }
+
+        /* ক্লেইম ফর্ম */
+        .claim-card { margin: 20px 15px; background: var(--card); border-radius: 20px; padding: 22px; border: 1px solid rgba(255,255,255,0.05); }
+        input { width: 100%; background: #0d1117; border: 1px solid #333; padding: 12px; border-radius: 10px; color: #fff; margin-bottom: 12px; outline: none; font-size: 15px !important; }
+        .custom-select { position: relative; background: #0d1117; border: 1px solid #333; border-radius: 10px; cursor: pointer; margin-bottom: 12px; padding: 12px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
+        .options-menu { position: absolute; top: 100%; left: 0; width: 100%; background: #161b22; border: 1px solid #333; border-radius: 0 0 10px 10px; z-index: 500; display: none; }
+        .opt { padding: 12px; border-bottom: 1px solid #222; font-size: 0.8rem; color: #fff; }
+        .submit-btn { width: 100%; padding: 16px; border-radius: 12px; background: linear-gradient(45deg, var(--hb), var(--accent)); border: none; color: #fff; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; }
+
+        .payout-section { margin: 20px 15px; background: #111; border-radius: 15px; border: 1px solid #222; padding: 15px; overflow: hidden; }
+        .payout-container { height: 260px; overflow: hidden; position: relative; margin-top: 10px; }
+        .payout-track { display: flex; flex-direction: column; animation: scrollUp 20s linear infinite; }
+        .payout-item { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; border-left: 3px solid var(--success); }
+
+        footer { background: #000; padding: 30px 15px; text-align: center; font-size: 0.65rem; color: #555; font-family: 'Orbitron'; border-top: 1px solid #222; margin-top: auto; }
+
+        @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+        @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-150%); } }
+        @keyframes glow { 0% { background-position: 0%; } 100% { background-position: 200%; } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <!-- কনফার্মেশন মডাল -->
+    <div id="confirm-modal">
+        <div class="modal-box">
+            <h3>বোনাস কনফার্মেশন</h3>
+            <p id="modal-desc" style="color:var(--hb); font-weight: bold;"></p>
+            <p>আপনার তথ্যগুলো যাচাই করা হবে। যদি রেফার করা একাউন্টে ডিপোজিট সম্পন্ন হয়, তবেই বোনাস পাবেন। আপনি কি নিশ্চিত?</p>
+            <div class="modal-btns">
+                <button class="m-btn btn-no" onclick="closeModal()">NO</button>
+                <button class="m-btn btn-yes" id="final-yes">YES</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- টোস্ট নোটিফিকেশন -->
+        <div id="app-toast">আবেদন সফল হয়েছে!</div>
+
+        <!-- লোডার -->
+        <div id="main-loader"><div class="loader-ring"></div><div class="loading-text">LOADING...</div></div>
+
+        <header>
+            <div class="head-left"><img id="head-logo-img" src="" style="width:38px; height:38px;;"></div>
+            <div class="brand-name" id="header-display">SOBOJ</div>
+            <div class="head-right" style="position:relative; color:var(--hb); cursor:pointer; font-size:1.2rem;" onclick="toggleNotif(event)">
+                <i class="fas fa-bell"></i>
+                <span id="notif-dot" style="display:none; position:absolute; top:-2px; right:-2px; width:8px; height:8px; background:red; border-radius:50%;"></span>
+            </div>
+        </header>
+
+        <!-- নোটিফিকেশন পপআপ -->
+        <div id="notif-window">
+            <h5 style="font-size:0.75rem; margin-bottom:10px; color:var(--hb); border-bottom:1px solid #333; padding-bottom:5px;">আপনার আবেদনের অবস্থা</h5>
+            <div id="notif-content"></div>
+        </div>
+
+        <div class="app-content">
+            <div class="swiper mySwiper"><div class="swiper-wrapper" id="slider-list"></div></div>
+            <div class="marquee-box">
+                <i class="fas fa-bullhorn" style="color:var(--hb); margin-right:12px;"></i>
+                <div style="flex:1; overflow:hidden;"><div class="marquee-text" id="marquee-display">তথ্য লোড হচ্ছে...</div></div>
+            </div>
+
+            <!-- ডিজিটাল ক্লিক ট্র্যাকিং যুক্ত গ্রিড -->
+            <div id="grid-links" class="grid-links"></div>
+            
+            <div class="separator-line"></div>
+
+            <!-- প্রোমো বক্স -->
+            <div class="promo-container">
+                <div class="promo-box">
+                    <h2 id="promo-title-display">...</h2>
+                    <p id="promo-msg-display">...</p>
+                </div>
+            </div>
+
+            <div id="ref-links-list" style="margin-top: 15px;"></div>
+
+            <div class="claim-card">
+                <h3 style="text-align:center; color:var(--gold); margin-bottom:18px; font-family:'Orbitron'; font-size: 0.95rem;">বোনাস ক্লেইম ফর্ম</h3>
+                
+                <div class="custom-select" onclick="toggleMenu('site-opts', event)"><span id="site-txt">ওয়েবসাইট নির্বাচন করুন</span><i class="fas fa-chevron-down"></i><div class="options-menu" id="site-opts"></div></div>
+
+                <div class="pay-grid">
+                    <div class="pay-item active" onclick="selectPay(this, 'বিকাশ')"><img src="https://soboj6033.github.io/file/bkash-logo.png"><span>বিকাশ</span></div>
+                    
+                    <div class="pay-item" onclick="selectPay(this, 'নগদ')"><img src="https://soboj6033.github.io/file/Nagad-Logo.png"><span>নগদ</span></div>
+                    
+
+                </div>
+                
+                <input type="number" id="my-num" placeholder="পেমেন্ট নাম্বার *">
+                
+                <div class="custom-select" onclick="toggleMenu('ref-opts', event)"><span id="ref-txt">কতজন রেফার?</span><i class="fas fa-chevron-down"></i><div class="options-menu" id="ref-opts">
+                    <div class="opt" onclick="setRef(1, '১ জন', event)">১ জন</div><div class="opt" onclick="setRef(2, '২ জন', event)">২ জন</div><div class="opt" onclick="setRef(5, '৫ জন', event)">৫ জন</div><div class="opt" onclick="setRef(10, '১০ জন', event)">১০ জন</div>
+                </div></div>
+
+                <div id="dynamic-fields"></div>
+
+                <button class="submit-btn" id="claim-btn">আবেদন সাবমিট করুন</button>
+            </div>
+
+            <div class="payout-section">
+                <h4 style="font-size:0.8rem; font-family:'Orbitron'; color:var(--success);"><i class="fas fa-history"></i> সাম্প্রতিক সফল পেমেন্টসমূহ</h4>
+                <div class="payout-container"><div class="payout-track" id="display-payouts"></div></div>
+            </div>
+        </div>
+        <footer id="footer-display">...</footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBdw7g_3soJcdkBeNBzPyAlm8Y534U2ye4",
+            authDomain: "project-653629965014063927.firebaseapp.com",
+            databaseURL: "https://project-653629965014063927-default-rtdb.firebaseio.com",
+            projectId: "project-653629965014063927",
+            storageBucket: "project-653629965014063927.firebasestorage.app",
+            messagingSenderId: "46960139897",
+            appId: "1:46960139897:web:0905b72e848647b665bea8"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let bonusRate = 0, selectedPayment = "বিকাশ", currentRefs = 0, dbData = {}, userIp = "";
+
+        // ডিজিটাল ট্র্যাকিং ফাংশন (গ্লোবাল)
+        window.trackClick = (siteName, url) => {
+            if (userIp && userIp !== "Unknown") {
+                const sip = userIp.replace(/\./g, '_');
+                set(ref(db, `analytics/unique_clicks/${siteName}/${sip}`), true);
+            }
+            // সরাসরি পেজ রিডাইরেক্ট (মোবাইল ব্রাউজার ফ্রেন্ডলি)
+            window.location.href = url;
+        };
+
+        // IP শনাক্তকরণ
+        fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => { 
+            userIp = d.ip; 
+            const sip = userIp.replace(/\./g, '_');
+            set(ref(db, 'analytics/unique_ips/' + sip), true); // সাইট ভিজিট কাউন্ট
+            updateNotifUI(); 
+        }).catch(() => userIp = "Unknown");
+
+        function showAppToast(msg, color = "#00f2ff") {
+            const t = document.getElementById('app-toast');
+            t.innerText = msg; t.style.background = color; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        window.toggleMenu = (id, e) => { 
+            e.stopPropagation(); 
+            const menu = document.getElementById(id);
+            document.querySelectorAll('.options-menu').forEach(m => { if(m.id !== id) m.style.display = 'none'; });
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block'; 
+        };
+
+        window.selectPay = (el, type) => { document.querySelectorAll('.pay-item').forEach(i => i.classList.remove('active')); el.classList.add('active'); selectedPayment = type; };
+        window.closeModal = () => document.getElementById('confirm-modal').style.display = 'none';
+
+        window.toggleNotif = (e) => { 
+            e.stopPropagation(); 
+            const w = document.getElementById('notif-window'); 
+            w.style.display = (w.style.display === 'block') ? 'none' : 'block'; 
+            document.getElementById('notif-dot').style.display = 'none'; 
+            updateNotifUI();
+        };
+
+        window.setRef = (v, t, e) => {
+            e.stopPropagation();
+            currentRefs = v; document.getElementById('ref-txt').innerText = t;
+            document.getElementById('ref-opts').style.display = 'none';
+            const cont = document.getElementById('dynamic-fields'); cont.innerHTML = "";
+            for (let i = 1; i <= v; i++) {
+                cont.innerHTML += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; margin-bottom:12px; border:1px dashed #444;">
+                    <span style="font-size:11px; color:var(--hb); display:block; margin-bottom:8px;">📥 রেফার ${i} ইউজারনেম *</span>
+                    <input type="text" class="ref-user-input" placeholder="রেফার ইউজার আইডি লিখুন" style="margin-bottom:0;">
+                </div>`;
+            }
+        };
+
+        window.updateNotifUI = () => {
+            const list = document.getElementById('notif-content');
+            if(!userIp) return;
+            let html = "";
+            const claims = Object.values(dbData.claims || {}).filter(c => c.ip === userIp);
+            const payouts = Object.values(dbData.payouts || {}).filter(p => p.ip === userIp);
+            claims.forEach(c => html += `<div class="notif-item"><b>${c.amt}</b> - পেন্ডিং<br><small>${c.website}</small></div>`);
+            payouts.forEach(p => html += `<div class="notif-item success"><b>${p.amt}</b> - সফল<br><small>পেমেন্ট সম্পন্ন</small></div>`);
+            list.innerHTML = html || '<p style="text-align:center; color:#666; font-size:0.6rem;">কোনো আবেদন পাওয়া যায়নি</p>';
+            if(html) document.getElementById('notif-dot').style.display = 'block';
+        };
+
+        onValue(ref(db, '/'), (snap) => {
+            try {
+                dbData = snap.val() || {};
+                const s = dbData.settings || {};
+                bonusRate = parseInt(s.bonusRate) || 0;
+
+                document.getElementById('header-display').innerText = s.headerName || "SOBOJ";
+                if(s.headerLogo) document.getElementById('head-logo-img').src = s.headerLogo;
+                document.getElementById('footer-display').innerText = s.footerText || "";
+                document.getElementById('promo-title-display').innerText = s.promoTitle || "...";
+                document.getElementById('promo-msg-display').innerText = s.promoMessage || "...";
+
+                if (s.marquees) document.getElementById('marquee-display').innerText = Object.values(s.marquees).join("   |   ★   |   ");
+                if (s.sliders) {
+                    document.getElementById('slider-list').innerHTML = Object.values(s.sliders).map(img => `<div class="swiper-slide"><img src="${img}"></div>`).join('');
+                    new Swiper(".mySwiper", { loop: true, autoplay: { delay: 3000 } });
+                }
+
+                const links = dbData.links ? Object.values(dbData.links) : [];
+                
+                // বাটন গ্রিড রেন্ডারিং - ট্র্যাকিং ফাংশন সহ
+                document.getElementById('grid-links').innerHTML = links.map(l => {
+                    const logo = l.logo || `https://www.google.com/s2/favicons?domain=${new URL(l.url).hostname}&sz=128`;
+                    return `<div class="link-card" onclick="trackClick('${l.name}', '${l.url}')">
+                        <img src="${logo}">
+                        <span>${l.name}</span>
+                    </div>`;
+                }).join('');
+
+                document.getElementById('ref-links-list').innerHTML = links.map(l => {
+                    const logo = l.logo || `https://www.google.com/s2/favicons?domain=${new URL(l.url).hostname}&sz=128`;
+                    return `<div class="ref-item">
+                        <img src="${logo}" class="site-logo-mini">
+                        <span class="site-name-center">${l.name}</span>
+                        <div class="action-btns">
+                            <div class="action-btn" onclick="navigator.clipboard.writeText('${l.url}').then(()=>showAppToast('লিঙ্ক কপি হয়েছে'))"><i class="fas fa-copy"></i></div>
+                            <div class="action-btn" onclick="navigator.share({title:'${l.name}', url:'${l.url}'})"><i class="fas fa-share-alt"></i></div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                document.getElementById('site-opts').innerHTML = links.map(l => `<div class="opt" onclick="event.stopPropagation(); document.getElementById('site-txt').innerText='${l.name}'; document.getElementById('site-opts').style.display='none'">${l.name}</div>`).join('');
+                
+                if (dbData.payouts) {
+                    const plist = Object.values(dbData.payouts).reverse();
+                    document.getElementById('display-payouts').innerHTML = [...plist, ...plist].map(p => `<div class="payout-item">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <img src="https://i.pravatar.cc/100?u=${p.name}" style="width:35px;height:35px;border-radius:50%; border:1px solid #333;">
+                                <div><b style="font-size:0.75rem;">${p.name}</b><br><small style="color:#666;">${p.refs || 0} রেফার সম্পন্ন</small></div>
+                            </div><b style="color:var(--success); font-size:0.85rem;">${p.amt}</b></div>`).join('');
+                }
+                updateNotifUI();
+            } catch (e) { console.error(e); }
+            
+            setTimeout(() => {
+                const loader = document.getElementById('main-loader');
+                if(loader) loader.style.opacity = '0';
+                setTimeout(() => { if(loader) loader.style.display = 'none'; }, 600);
+            }, 1500);
+        });
+
+        document.getElementById('claim-btn').onclick = async () => {
+            const phone = document.getElementById('my-num').value.trim();
+            const site = document.getElementById('site-txt').innerText;
+            const refInputs = document.querySelectorAll('.ref-user-input');
+
+            if(!phone || site.includes("নির্বাচন") || currentRefs === 0) return showAppToast("সব তথ্য দিন!", "#ff3131");
+
+            let refNames = [];
+            refInputs.forEach(input => { if(input.value.trim()) refNames.push(input.value.trim()); });
+            if(refNames.length < currentRefs) return showAppToast("সব রেফার ইউজারনেম দিন!", "#ff3131");
+
+            const bonus = currentRefs * bonusRate;
+            document.getElementById('modal-desc').innerText = `আপনি ${currentRefs} জন রেফারের জন্য ৳${bonus} ক্লেইম করছেন।`;
+            document.getElementById('confirm-modal').style.display = 'flex';
+
+            document.getElementById('final-yes').onclick = async () => {
+                document.getElementById('confirm-modal').style.display = 'none';
+                try {
+                    await push(ref(db, 'claims'), {
+                        website: site, method: selectedPayment, phone: phone,
+                        refs: currentRefs, amt: "৳ " + bonus, referrals: refNames.map(n => ({name: n})),
+                        ip: userIp, time: Date.now()
+                    });
+                    showAppToast("আবেদন সফল হয়েছে!");
+                    setTimeout(() => location.reload(), 1000);
+                } catch (e) { showAppToast("সার্ভার এরর!", "#ff3131"); }
+            };
+        };
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.options-menu').forEach(m => m.style.display = 'none');
+            const win = document.getElementById('notif-window');
+            if(win) win.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
